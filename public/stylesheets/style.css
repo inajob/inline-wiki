@@ -9,3 +9,118 @@ textarea{
   width:100%;
   height:300px;
 }
+/* =========================== */
+* {
+  margin:0;
+  padding:0;
+}
+body{
+  background-color:#eee;
+}
+.wiki-body{
+  margin-top:1em;
+  margin-left:10em;
+  margin-right:3em;
+}
+ul{
+  margin-left:1em;
+}
+pre {
+  padding:5px;
+}
+.h1{
+  font-size:4em;
+  padding:3px;
+}
+.h2{
+  font-size:3em;
+  padding:3px;
+}
+.h3{
+  font-size:2em;
+  padding:3px;
+}
+.block-type{
+  background-color:#ddd;
+  color:#333;
+  padding-left:3px;
+  padding-right:3px;
+  border-radius:3px;
+  font-size:xx-small;
+}
+.status-bar{
+  background-color:#333;
+  color:white;
+  border:solid #399;
+  border-width:0px 0px 0px 3px;
+}
+.status-bar span{
+  background-color:#666;
+  padding-left:1em;
+  padding-right:1em;
+  margin-left:1em;
+  margin-right:1em;
+}
+.side-bar{
+  position:absolute;
+  top:1em;
+  left:0px;
+  margin:1em;
+}
+
+.small{
+  display:inline-block;
+  background-color:#ddd;
+  color:gray;
+  border-radius: 5px;
+}
+.list{
+  background-color:gray;
+  color:white;
+  border-radius: 3px;
+}
+.text{
+}
+.full{
+}
+
+.full textarea{
+  width:90%;
+  height:1em;
+  padding:3px;
+}
+.twin{
+  width:100%;
+}
+.half{
+  width:40%;
+  float:left;
+}
+textarea{
+  font-family: sans-serif;
+  word-wrap:normal;
+  overflow:hide;
+  outline:none;
+}
+table {
+  border:solid;
+}
+table td {
+  border:solid 1px;
+  padding:0.5em;
+}
+img.paste{
+  border: solid 1px;
+}
+.cf:before,
+.cf:after {
+  content: " ";
+  display: table;
+}
+.cf:after {
+  clear: both;
+}
+.cf {
+  *zoom: 1;
+}
+
