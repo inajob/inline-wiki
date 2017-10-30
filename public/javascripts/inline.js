@@ -70,5 +70,22 @@ setInterval(function(){
 
 },1000);
 
+var search = document.location.search;
+var opts = {};
+if(search){
+  search = search.replace(/^\?/, "");
+  search.split("&").forEach(function(v){
+    var tmp = v.split("=");
+    opts[tmp[0]] = tmp[1];
+  });
+  console.log("options",opts);
+}
+
+if(opts["mode"] && opts["mode"] == "edit"){
+  // todo: require editor.js
+  setTimeout(function(){
+    store.dispatch({type: "EDITABLE"});
+  }, 1000);
+}
 
 });
