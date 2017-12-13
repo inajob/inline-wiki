@@ -12,6 +12,7 @@ var passport = auth.passport;
 
 var users = require('./routes/users');
 var data = require( './routes/data' );
+var contents = require( './routes/contents' );
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use(session({secret: 'test-salt'}));
 //app.use('/', index);
 //app.use('/users', users);
 app.use('/data', data)
+app.use('/contents', contents)
 
 var routes = require('./routes');
 
@@ -54,7 +56,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+console.log(err);
   // render the error page
   res.status(err.status || 500);
   res.render('error');

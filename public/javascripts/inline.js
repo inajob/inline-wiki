@@ -7,8 +7,12 @@ function xhr(url, f){
   xmlhttp.onreadystatechange = function(){
     if(xmlhttp.readyState == 4){
       if(xmlhttp.status == 200){
-        var obj = JSON.parse(xmlhttp.responseText);
-        if(f){f(obj)}
+        try{
+          var obj = JSON.parse(xmlhttp.responseText);
+          if(f){f(obj)}
+        }catch(e){
+          f({title: "hoge", body: "not-found"});
+        }
       }
     }
   };
@@ -39,36 +43,6 @@ function $(n){
   return document.getElementById(n);
 }
 
-xhr('/data/58e077519b21dc02814006d8', function(o){
-  console.log(o);
-  var s = o.body;
-  //$('contents').innerText = o.body;
-
-  // todo: require editor.js
-  setTimeout(function(){
-    var tmpList = loadList(s.split(/[\r\n]/));
-    for(var i = 0; i < tmpList.length; i ++){
-      store.dispatch({type: "APPEND", text: tmpList[i]});
-      preview(store.getState().cursor - 1, tmpList[i]);
-    }
-    store.dispatch({type: "FOCUS", no: 0});
-  },100);
-
-});
-
-var preText;
-setInterval(function(){
-  var list = dumpList();
-  var text = list.join("\n")
-
-  if(text != preText){
-    console.log("text diff!");
-    xhrPut('/data/58e077519b21dc02814006d8',function(){
-      preText= text;
-    }, {body: text});
-  }
-
-},1000);
 
 var search = document.location.search;
 var opts = {};
@@ -87,5 +61,41 @@ if(opts["mode"] && opts["mode"] == "edit"){
     store.dispatch({type: "EDITABLE"});
   }, 1000);
 }
+
+if(opts["title"]){
+  // load
+
+  xhr('/contents/' + opts["title"], function(o){
+    console.log(o);
+    var s = o.body;
+    //$('contents').innerText = o.body;
+  
+    // todo: require editor.js
+    setTimeout(function(){
+      var tmpList = loadList(s.split(/[\r\n]/));
+      for(var i = 0; i < tmpList.length; i ++){
+        store.dispatch({type: "APPEND", text: tmpList[i]});
+        preview(store.getState().cursor - 1, tmpList[i]);
+      }
+      store.dispatch({type: "FOCUS", no: 0});
+    },100);
+  
+  });
+
+  var preText;
+  setInterval(function(){
+    var list = dumpList();
+    var text = list.join("\n")
+  
+    if(text != preText){
+      console.log("text diff!");
+      xhrPut('/contents/' + opts["title"],function(){
+        preText= text;
+      }, {title: opts["title"], body: text});
+    }
+  
+  },1000);
+}
+
 
 });
