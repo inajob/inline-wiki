@@ -58,7 +58,8 @@ function blockToHTML(blockType, body, no){
 }
 
 function escapeHTML(s){
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return inlineDecorator.htmlEncode(inlineDecorator.parse(s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")));
+  //return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 // convert 1 line string to html decorate string
@@ -201,7 +202,14 @@ var Line = React.createClass({
     if(this.props.isRaw){ this.focus(); }
   },
   clickHandler:function(e){
-    store.dispatch({type:"FOCUS", no: this.props.lineNo});
+    if(e.target.dataset.link){
+      // todo jump page
+      console.log("link", e.target.dataset.link);
+      //store.dispatch({type:"JUMP", page: e.target.dataset.link});
+      document.location.href = "?mode=" + (store.getState().readOnly?"":"edit") + "&title=" + e.target.dataset.link;
+    }else{
+      store.dispatch({type:"FOCUS", no: this.props.lineNo});
+    }
   },
   marge: function(a,b){
     for(var x in b){ a[x] = b[x]; }
