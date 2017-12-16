@@ -33,8 +33,16 @@ function blockToHTML(blockType, body, no){
     case "tex":
         var elm = document.createElement("div");
         elm.innerHTML = body;
-        MathJax.Hub.Queue(function(){console.log("pre render")},["Typeset", MathJax.Hub, elm], function(){
-          store.dispatch({type: "PREVIEW", no: no, preview: elm.innerHTML});
+        // mathjs doesn't render if don't insert the element.
+        document.getElementById("math").appendChild(elm);
+        console.log(body);
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, elm], function(){
+          console.log("preview",elm);
+          var body = '<span class="block-type">&gt;&gt; tex</span><br/>' + elm.innerHTML + '<br/><span class="block-type">&lt;&lt;</span>';
+
+          store.dispatch({type: "PREVIEW", no: no, preview: body});
+          // mathjs doesn't render if don't insert the element.
+          document.getElementById("math").removeChild(elm);
         });
         return "rendering..";
     case "table":
@@ -628,6 +636,9 @@ function dumpList(){
   var d = store.getState().data
   d.forEach(function(v){
     ret.push(v.raw);
+    if(v.raw.indexOf(">>") != -1){
+      ret.push("<<");
+    }
   });
   return ret;
 }
