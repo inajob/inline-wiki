@@ -3,7 +3,7 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color: #00f;
 }
 textarea{
   width:100%;
@@ -74,6 +74,12 @@ pre {
   color:gray;
   border-radius: 5px;
 }
+.tiny{
+  display:inline-block;
+  color:gray;
+  font-size:xx-small;
+}
+
 .list{
   background-color:gray;
   color:white;

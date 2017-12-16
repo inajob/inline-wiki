@@ -63,22 +63,23 @@ var inlineDecorator = (function(){
         switch(cmd){
           case "link":
             list = tmp.split(/(\s+)/);
+            out.push("<span class='tiny'>{{link </span>");
+            out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
             if(list.length == 3){ // {{link target}}
-              out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
               out.push(list[2]);
-              out.push("</a>")
             }else if(list.length > 4){ // {link target body}}
               remain = tmp.slice((list[0] + list[1] + list[2] + list[3]).length);
-              out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
               out.push(remain);
-              out.push("</a>")
             }
+            out.push("</a>")
+            out.push("<span class='tiny'>}}</span>");
           break;
           case "img":
             remain = tmp.slice(m.index + delimiter.length);
             out.push("<img src='")
             out.push(remain.replace("'", ""));
             out.push("' />")
+            out.push("<span class='tiny'>{{img " + remain + "}}</span>");
           break;
           default:
             out.push("{{")
