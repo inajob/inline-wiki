@@ -61,5 +61,15 @@ describe('htmlEncode', function(){
   ]
   ),"ab<img src='address' />yz")});
 
+  it('link + img', function(){assert.deepEqual(id.htmlEncode([
+    {kind: "text",body: "ab"},
+    [
+      {kind: "text",body: "link hoge "},
+      [{kind: "text",body: "img address"}]
+    ],
+    {kind: "text",body: "yz"},
+  ]
+  ),"ab<a data-link='hoge'><img src='address' /></a>yz")});
+
 
 });

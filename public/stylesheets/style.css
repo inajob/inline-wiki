@@ -109,6 +109,16 @@ table td {
   border:solid 1px;
   padding:0.5em;
 }
+a{
+  cursor:pointer;
+}
+a:hover{
+  color:#ddf;
+  background-color:#33d;
+}
+img{
+  border:solid 1px;
+}
 img.paste{
   border: solid 1px;
 }

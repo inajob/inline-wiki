@@ -41,23 +41,43 @@ var inlineDecorator = (function(){
     var out = [];
     var tmp;
     var list;
-    var cmd;
+    var cmd,remain;
     body.forEach(function(v){
       if(Array.isArray(v)){
         console.log("in");
         tmp = htmlEncode(v);
         list = tmp.split(/\s+/, 2);
-        console.log(list)
-        cmd = list[0];
+        //console.log(list,tmp)
+        //cmd = list[0];
+        //remain = tmp;
+
+        var m = tmp.match(/\s+/);
+        if(m){
+          var delimiter = m[0];
+          cmd = tmp.slice(0, m.index);
+        }else{
+          cmd = "";
+        }
+        console.log(m,cmd,remain);
+
         switch(cmd){
           case "link":
-            out.push("<a data-link='" +encodeURIComponent(list[1])+ "'>")
-            out.push(list[1]);
-            out.push("</a>")
+            list = tmp.split(/(\s+)/);
+            if(list.length == 3){ // {{link target}}
+              out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
+              out.push(list[2]);
+              out.push("</a>")
+            }else if(list.length > 4){ // {link target body}}
+              remain = tmp.slice((list[0] + list[1] + list[2] + list[3]).length);
+              out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
+              out.push(remain);
+              out.push("</a>")
+            }
           break;
           case "img":
+            remain = tmp.slice(m.index + delimiter.length);
             out.push("<img src='")
-            out.push(list[1].replace("'", ""));
+            out.push(remain.replace("'", ""));
             out.push("' />")
           break;
           default:
