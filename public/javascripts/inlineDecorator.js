@@ -5,29 +5,64 @@ var inlineDecorator = (function(){
   {{img img}}
   */
 
-  function newPiece(s){
-    return {kind:"text", body: s};
+  function newPiece(kind, s){
+    return {kind: kind, body: s};
+  }
+
+  function capture(body, targets, offset){
+    var minPos = -1;
+    var minTarget = "";
+    targets.forEach(function(target){
+      var index = body.indexOf(target, offset);
+      if(index != -1){
+        if(minPos == -1 || minPos > index){
+          minPos = index;
+          minTarget = target;
+        }
+      }
+    });
+    return {pos: minPos, target: minTarget}
   }
 
   function parse(body){
     var pos = 0;
+    var fMap = [
+      {target: '{{', action: function(){
+
+      }},
+      {target: '}}', action: function(){
+
+      }},
+    ];
     function inner(level){
       var out = [];
       while(true){
-        var index = body.indexOf("{{", pos);
-        var index2 = body.indexOf("}}", pos);
-        if((index != -1 && index2 != -1 && index < index2) || (index != -1 && index2 == -1)){
-          out.push(newPiece(body.slice(pos, index)));
-          pos = index + "{{".length;
+        var cap = capture(body, ["{{","}}", "http://", "https://"], pos);
+        if(cap.target == "{{"){
+          out.push(newPiece("text", body.slice(pos, cap.pos)));
+          pos = cap.pos + "{{".length;
           out.push(inner(level + 1));
-        }else if((index2 != -1 && index != -1 && index2 < index) || (index == -1 && index2 != -1)){
-          out.push(newPiece(body.slice(pos, index2)));
-          pos = index2 + "}}".length;
+        }else if(cap.target == "}}"){
+          out.push(newPiece("text", body.slice(pos, cap.pos)));
+          pos = cap.pos + "}}".length;
           if(level > 0){
             break;
           }
+        }else if(cap.target=="https://" || cap.target == "http://"){
+          if(pos != cap.pos){
+            out.push(newPiece("text", body.slice(pos, cap.pos)));
+          }
+          var endPos = capture(body, [" ","\r", "\n"], pos + cap.target.length);
+          if(endPos.pos != -1){
+            out.push(newPiece("url", body.slice(cap.pos, endPos.pos)));
+            pos = endPos.pos;
+          }else{
+            out.push(newPiece("url", body.slice(cap.pos, body.length)));
+            pos = body.length;
+            break;
+          }
         }else{
-          out.push(newPiece(body.slice(pos, body.length)));
+          out.push(newPiece("text", body.slice(pos, body.length)));
           pos = body.length;
           break;
         }
@@ -86,12 +121,22 @@ var inlineDecorator = (function(){
             out.push(tmp);
             out.push("}}")
         }
+      }else{
+        switch(v.kind){
+          case "text":
+            out.push(v.body);
+            break;
+          case "url":
+            // todo: escape
+            out.push("<a href='" +  v.body + "'>" + v.body + "</a>");
+            break;
+        }
       }
-      out.push(v.body);
     });
     return out.join("");
   }
 
+  exports.capture = capture;
   exports.parse = parse;
   exports.htmlEncode = htmlEncode;
   return exports;
