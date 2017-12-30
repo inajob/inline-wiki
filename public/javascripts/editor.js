@@ -24,12 +24,39 @@ MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$']] } });
 [x] タグが入ったときの対応
  */
 
+function jsonp(name, src, f){
+  window[name] = function(data){
+    f(data);
+  }
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.async = true;
+  script.src = src;
+  document.body.appendChild(script);
+}
+
 function blockToHTML(blockType, body, no){
   switch(blockType){
     case "code":
       return '<pre>' + hljs.fixMarkup(hljs.highlightAuto(body).value) + '</pre>';
     case "image":
         return '<img class="paste" alt="' + body + '" src="' + body + '" />';
+    case "oembed":
+      // "http://api.embed.ly/1/oembed?key="+inajob.key.embedly+"&url="+encodeURIComponent(tmp[0])+'&callback=?'
+      var name = "callback_" + Math.random().toString(36).slice(-8);
+      console.log(body);
+      var url;
+      url = "https://noembed.com/embed?url="+encodeURIComponent(body.replace(/[\r\n]/g,""))+'&callback=' + name;
+
+      if(url){
+        jsonp(name, url, function(data){
+          //
+          console.log(data);
+          var body = '<span class="block-type">&gt;&gt; oembed</span><br/>' + data.html + '<br/><span class="block-type">&lt;&lt; by noembed.com</span>';
+          store.dispatch({type: "PREVIEW", no: no, preview: body});
+        });
+      }
+      return "oembed... " + body;
     case "tex":
         var elm = document.createElement("div");
         elm.innerHTML = body;
