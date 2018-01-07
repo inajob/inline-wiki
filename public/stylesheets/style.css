@@ -17,8 +17,16 @@ textarea{
 body{
   background-color:#eee;
 }
+.wiki-title{
+  position:absolute;
+  right:10px;
+  top:0px;
+  border:solid #aaf;
+  background-color:#ddd;
+  padding:5px;
+}
 .wiki-body{
-  margin-top:1em;
+  margin-top:2em;
   margin-left:10em;
   margin-right:3em;
 }
@@ -53,6 +61,9 @@ pre {
   color:white;
   border:solid #399;
   border-width:0px 0px 0px 3px;
+  position:absolute;
+  width:100%;
+  top:0px;
 }
 .status-bar span{
   background-color:#666;

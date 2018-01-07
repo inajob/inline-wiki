@@ -434,6 +434,9 @@ var Lines = React.createClass({
       store.dispatch({type: "READONLY"});
     }
   },
+  back(){
+    history.back();
+  },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
     var helloReact = <div className="text">
@@ -442,14 +445,18 @@ var Lines = React.createClass({
         <span>status</span>
 
         <span onClick={this.modeChange}>{this.props.readOnly?"edit":"view"}</span>
+        <span onClick={this.back}>back</span>
       </div>
       <div className="wiki-body">
-      {listNumber}
+        <h1 className="wiki-title">{this.props.title}</h1>
+        {listNumber}
+
+        <div className="debug-console">
+          <div>title: {this.props.title}</div>
+          <div>readOnly: {this.props.readOnly?"true":"false"}</div>
+        </div>
       </div>
-      <div className="debug-console">
-        <div>title: {this.props.title}</div>
-        <div>readOnly: {this.props.readOnly?"true":"false"}</div>
-      </div>
+      
       <div className="side-bar">
         side bar
         <ul>

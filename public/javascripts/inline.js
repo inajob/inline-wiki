@@ -78,7 +78,7 @@ if(opts["title"]){
         preview(store.getState().cursor - 1, tmpList[i]);
       }
       store.dispatch({type: "FOCUS", no: 0});
-      store.dispatch({type: "SETTITLE", title: opts["title"]});
+      store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
     },100);
   
   }, function(){
