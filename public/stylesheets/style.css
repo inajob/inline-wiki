@@ -67,6 +67,13 @@ pre {
   left:0px;
   margin:1em;
 }
+.debug-console{
+  border: solid 1px;
+  background-color: black;
+  color: #0f0;
+  padding: 3px;
+  font-size:xx-small;
+}
 
 .small{
   display:inline-block;
@@ -140,4 +147,3 @@ img.paste{
 .cf {
   *zoom: 1;
 }
-

@@ -38,7 +38,9 @@ router.get( '/', function ( req, res ) {
 
 // GET find :id
 router.get( '/:title', function ( req, res ) {
+  console.log("title: "+ req.params.title);
   collection(COL).findOne( { title: req.params.title }, {}, function(err, r){
+    console.log(r);
     res.send( r );
   } );
 } );
@@ -53,6 +55,7 @@ router.get( '/:title', function ( req, res ) {
 
 // PUT update data
 router.put( '/:title', authorize, function ( req, res ) {
+  console.log(req.params.title)
   console.log(req.body)
   collection(COL).findOneAndUpdate( { title: req.params.title }, req.body, {upsert: true}, function(err, r){
     res.send( r );

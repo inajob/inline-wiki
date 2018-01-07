@@ -1,7 +1,7 @@
 window.addEventListener('load', function(){
 
 // GET request
-function xhr(url, f){
+function xhr(url, f, errf){
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.open("GET", url);
   xmlhttp.onreadystatechange = function(){
@@ -11,7 +11,7 @@ function xhr(url, f){
           var obj = JSON.parse(xmlhttp.responseText);
           if(f){f(obj)}
         }catch(e){
-          f({title: "hoge", body: "not-found"});
+          errf();
         }
       }
     }
@@ -69,7 +69,7 @@ if(opts["title"]){
     console.log(o);
     var s = o.body;
     //$('contents').innerText = o.body;
-  
+ 
     // todo: require editor.js
     setTimeout(function(){
       var tmpList = loadList(s.split(/[\r\n]/));
@@ -78,8 +78,19 @@ if(opts["title"]){
         preview(store.getState().cursor - 1, tmpList[i]);
       }
       store.dispatch({type: "FOCUS", no: 0});
+      store.dispatch({type: "SETTITLE", title: opts["title"]});
     },100);
   
+  }, function(){
+    if(confirm("This page seems to be empty, create new page?")){
+      //
+      store.dispatch({type: "APPEND", text: "not-found"});
+      store.dispatch({type: "FOCUS", no: 0});
+      store.dispatch({type: "SETTITLE", title: opts["title"]});
+    }else{
+      //
+      opts["title"] = "";
+    }
   });
 
   var preText;
@@ -91,7 +102,7 @@ if(opts["title"]){
       console.log("text diff!");
       xhrPut('/contents/' + opts["title"],function(){
         preText= text;
-      }, {title: opts["title"], body: text});
+      }, {title: decodeURIComponent(opts["title"]), body: text});
     }
   
   },1000);

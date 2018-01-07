@@ -43,10 +43,17 @@ function blockToHTML(blockType, body, no){
         return '<img class="paste" alt="' + body + '" src="' + body + '" />';
     case "oembed":
       // "http://api.embed.ly/1/oembed?key="+inajob.key.embedly+"&url="+encodeURIComponent(tmp[0])+'&callback=?'
+      // https://api.twitter.com/1/statuses/oembed.json?url=&callback=?
+
       var name = "callback_" + Math.random().toString(36).slice(-8);
       console.log(body);
       var url;
-      url = "https://noembed.com/embed?url="+encodeURIComponent(body.replace(/[\r\n]/g,""))+'&callback=' + name;
+      url = "https://noembed.com/embed";
+      if(body.indexOf("https://twitter.com") != -1){
+        url = "https://api.twitter.com/1/statuses/oembed.json";
+      }
+
+      url += "?url="+encodeURIComponent(body.replace(/[\r\n]/g,""))+'&callback=' + name;
 
       if(url){
         jsonp(name, url, function(data){
@@ -54,6 +61,7 @@ function blockToHTML(blockType, body, no){
           console.log(data);
           var body = '<span class="block-type">&gt;&gt; oembed</span><br/>' + data.html + '<br/><span class="block-type">&lt;&lt; by noembed.com</span>';
           store.dispatch({type: "PREVIEW", no: no, preview: body});
+          twttr.widgets.load()
         });
       }
       return "oembed... " + body;
@@ -419,16 +427,28 @@ var Lines = React.createClass({
       return false;
     }
   },
+  modeChange(){
+    if(this.props.readOnly){
+      store.dispatch({type: "EDITABLE"});
+    }else{
+      store.dispatch({type: "READONLY"});
+    }
+  },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
     var helloReact = <div className="text">
       <div className="status-bar">
         <span>inline-wiki</span>
         <span>status</span>
-        <span>new</span>
+
+        <span onClick={this.modeChange}>{this.props.readOnly?"edit":"view"}</span>
       </div>
       <div className="wiki-body">
       {listNumber}
+      </div>
+      <div className="debug-console">
+        <div>title: {this.props.title}</div>
+        <div>readOnly: {this.props.readOnly?"true":"false"}</div>
       </div>
       <div className="side-bar">
         side bar
@@ -449,6 +469,7 @@ var Lines = React.createClass({
 });
 
 var initialWiki = {
+  title: "",
   readOnly: true,
   cursor: 0,
   data:[
@@ -468,12 +489,21 @@ var wiki = function(state, action) {
 
       data[action.no] = {raw: state.data[action.no].raw, preview: action.preview};
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
         data: data
       };
+    case "SETTITLE":
+      return {
+        title: action.title,
+        readOnly: state.readOnly,
+        cursor: state.no,
+        data: state.data
+      };
     case "FOCUS":
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: action.no,
         data: state.data
@@ -481,6 +511,7 @@ var wiki = function(state, action) {
     case "UP":
       if(state.cursor > 0){
         return {
+          title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor - 1,
           data: state.data
@@ -492,6 +523,7 @@ var wiki = function(state, action) {
     case "DOWN":
       if(state.cursor + 1 < state.data.length){
         return {
+          title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor + 1,
           data: state.data
@@ -508,6 +540,7 @@ var wiki = function(state, action) {
       }
       data[state.cursor] = {raw: action.text, preview: data[state.cursor].preview};
       return {
+          title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor,
           data: data
@@ -520,6 +553,7 @@ var wiki = function(state, action) {
         preview: ""
       });
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
         data: data
@@ -530,6 +564,7 @@ var wiki = function(state, action) {
       data[state.cursor] = {raw: action.second, preview: ""};
       data.splice(state.cursor, 0, {raw: action.first, preview: ""});
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
         data: data
@@ -540,6 +575,7 @@ var wiki = function(state, action) {
       data[state.cursor - 1] = {raw: data[state.cursor - 1].raw + data[state.cursor].raw , preview: ""};
       data.splice(state.cursor, 1);
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor - 1,
         data: data
@@ -556,6 +592,7 @@ var wiki = function(state, action) {
 
       data[state.cursor] = {raw: tmp, preview: ""};
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
         data:data
@@ -572,18 +609,21 @@ var wiki = function(state, action) {
         data[state.cursor] = {raw: tmp, preview: ""};
       }
       return {
+        title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
         data:data
       }
     case "READONLY":
       return {
+        title: state.title,
         readOnly: true,
         cursor: state.cursor,
-        data:data
+        data: state.data
       };
     case "EDITABLE":
       return {
+        title: state.title,
         readOnly: false,
         cursor: state.cursor,
         data: state.data
@@ -596,6 +636,7 @@ var store = Redux.createStore(wiki);
 
 var mapStateToProps = function(state){
   return {
+    title: state.title,
     readOnly: state.readOnly,
     cursor: state.cursor,
     data: state.data,
