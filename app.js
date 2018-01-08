@@ -20,6 +20,7 @@ var app = express();
 //app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.disable('etag'); // disable 304
+app.use(bodyParser.urlencoded({ limit:'50mb',extended: true })); // include image page may be big
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
