@@ -98,11 +98,15 @@ pre {
   font-size:xx-small;
 }
 
+.list-pre{
+  color:#ccc;
+  letter-spacing: 12px;
+}
+
 .list{
-  background-color:gray;
-  color:white;
-  border-radius: 3px;
-  letter-spacing: 2px;
+  color:#333;
+  letter-spacing: 12px;
+  font-weight: bold;
 }
 .text{
 }

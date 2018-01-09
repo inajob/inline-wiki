@@ -127,7 +127,10 @@ function inline(s, no){
     var spaces = m[0].length;
     var minuses = m[1].length;
     var nest = spaces + minuses;
-    var ret = '<span class="list">' + s.substring(0, nest) + '</span>'  + escapeHTML(s.substring(nest)) + "";
+    var ret = '';
+    ret += '<span class="list-pre">' + s.substring(0, nest - 1) + '</span>';
+    ret += '<span class="list">' + s.substring(nest - 1, nest) + '</span>';
+    ret += escapeHTML(s.substring(nest)) + "";
     return ret;
   }else if(s.length == 0){
     return "--- blank ---";
