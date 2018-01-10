@@ -18,17 +18,27 @@ body{
   background-color:#eee;
 }
 .wiki-title{
-  position:absolute;
-  right:10px;
-  top:0px;
+  /*
   border:solid #aaf;
   background-color:#ddd;
-  padding:5px;
+  */
+  font-size:2em;
+  background: #ddf;/*背景色*/
+  vertical-align: middle;/*上下中央*/
+  border-radius: 25px 0px 0px 25px;/*左側の角を丸く*/
+  border:solid 5px #aaf;
+  border-right: 0px;
+  margin-left:-30px;
+  margin-top:-6px;
+  margin-bottom:10px;
+  padding-left:30px;
+
 }
 .wiki-body{
   margin-top:2em;
   margin-left:10em;
   margin-right:3em;
+  border:solid 6px #aaf
 }
 ul{
   margin-left:1em;
@@ -84,6 +94,7 @@ pre {
   color: #0f0;
   padding: 3px;
   font-size:xx-small;
+  margin-top:30px;
 }
 
 .small{

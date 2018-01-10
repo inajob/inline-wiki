@@ -86,7 +86,7 @@ if(opts["title"]){
       //
       store.dispatch({type: "APPEND", text: "not-found"});
       store.dispatch({type: "FOCUS", no: 0});
-      store.dispatch({type: "SETTITLE", title: opts["title"]});
+      store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
     }else{
       //
       opts["title"] = "";

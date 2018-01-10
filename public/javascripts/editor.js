@@ -153,6 +153,8 @@ function calcStyle(s){
     style['borderWidth'] = "0px 0px 1px 0px";
 
   }else if(s.indexOf("##")==0){
+    style['border'] = "solid #aaf";
+    style['borderWidth'] = "0px 0px 5px 0px";
     style['fontWeight'] = "bold";
     style['fontSize'] = "1.5em";
     style['backgroundColor'] = "#ddf";
@@ -161,7 +163,8 @@ function calcStyle(s){
 
   }else if(s.indexOf("#")==0){
     style['border'] = "solid #aaf";
-    style['borderWidth'] = "3px 3px 3px 20px";
+    style['borderWidth'] = "0px 0px 0px 30px";
+    style['borderRadius'] = "20px 0px 0px 20px";
     style['marginLeft'] = "-20px";
     style['fontSize'] = "2em";
     style['fontWeight'] = "bold";
@@ -453,11 +456,10 @@ var Lines = React.createClass({
       <div className="wiki-body">
         <h1 className="wiki-title">{this.props.title}</h1>
         {listNumber}
-
-        <div className="debug-console">
-          <div>title: {this.props.title}</div>
-          <div>readOnly: {this.props.readOnly?"true":"false"}</div>
-        </div>
+      </div>
+      <div className="debug-console">
+        <div>title: {this.props.title}</div>
+        <div>readOnly: {this.props.readOnly?"true":"false"}</div>
       </div>
       
       <div className="side-bar">
