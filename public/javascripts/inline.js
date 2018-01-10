@@ -13,6 +13,8 @@ function xhr(url, f, errf){
         }catch(e){
           errf();
         }
+      }else{
+        errf();
       }
     }
   };
