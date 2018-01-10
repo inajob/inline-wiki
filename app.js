@@ -13,6 +13,7 @@ var passport = auth.passport;
 var users = require('./routes/users');
 var data = require( './routes/data' );
 var contents = require( './routes/contents' );
+var file = require( './routes/file' );
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use(session({secret: 'test-salt'}));
 //app.use('/users', users);
 app.use('/data', data)
 app.use('/contents', contents)
+app.use('/file', file)
 
 var routes = require('./routes');
 

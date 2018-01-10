@@ -65,10 +65,9 @@ if(opts["mode"] && opts["mode"] == "edit"){
 if(opts["title"]){
   // load
 
-  xhr('/contents/' + opts["title"], function(o){
+  xhr('/file/' + opts["title"], function(o){
     console.log(o);
     var s = o.body;
-    //$('contents').innerText = o.body;
  
     // todo: require editor.js
     setTimeout(function(){
@@ -100,7 +99,7 @@ if(opts["title"]){
   
     if(text != preText){
       console.log("text diff!");
-      xhrPut('/contents/' + opts["title"],function(){
+      xhrPut('/file/' + opts["title"],function(){
         preText= text;
       }, {title: decodeURIComponent(opts["title"]), body: text});
     }
