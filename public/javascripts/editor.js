@@ -445,7 +445,7 @@ var Lines = React.createClass({
   },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
-    var fileList =  this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file}>{decodeURIComponent(file)}</a></li>);
+    var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file}>{decodeURIComponent(file)}</a></li>);
 
     var helloReact = <div className="text">
       <div className="status-bar">
