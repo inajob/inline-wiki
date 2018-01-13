@@ -90,7 +90,17 @@ pre {
   position:absolute;
   top:1em;
   left:0px;
-  margin:1em;
+  margin-top:1em;
+}
+.side-bar ul{
+  margin: 2px;
+}
+.side-bar li{
+  list-style-type: none;
+  border:solid 2px #aaf;
+  border-width: 1px 1px 1px 5px;
+  margin-top:3px;
+  background-color: #ddf;
 }
 .debug-console{
   border: solid 1px;

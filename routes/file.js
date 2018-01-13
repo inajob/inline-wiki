@@ -25,13 +25,19 @@ router.all( '/*', function ( req, res, next ) {
     next();
 } );
 
-// GET find all(not support?)
-router.get( '/', function ( req, res ) {
-  res.send("not support");
+router.get( '/list/', function ( req, res ) {
+  fs.readdir(baseDir, function(err, files){
+    if(err) throw err;
+    var fileList = files.filter(function(file){
+      return fs.statSync(path.join(baseDir,file)).isFile() && /.*\.txt$/.test(file);
+    });
+    fileList = fileList.map(function(a){return a.replace(/\.txt$/,"")});
+    res.send({list: fileList});
+  });
 } );
 
 // GET find :id
-router.get( '/:title', function ( req, res ) {
+router.get( '/items/:title', function ( req, res ) {
   fs.readFile(path.join(baseDir, encodeURIComponent(req.params.title) + '.txt'), 'utf8', function(err, text){
     if(err == null){
       res.send({'status': 'success', 'body': text});

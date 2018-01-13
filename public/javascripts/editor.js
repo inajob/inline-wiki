@@ -445,6 +445,8 @@ var Lines = React.createClass({
   },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
+    var fileList =  this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file}>{decodeURIComponent(file)}</a></li>);
+
     var helloReact = <div className="text">
       <div className="status-bar">
         <span>inline-wiki</span>
@@ -469,15 +471,8 @@ var Lines = React.createClass({
       </div>
       
       <div className="side-bar">
-        side bar
         <ul>
-          <li>test</li>
-          <li>test</li>
-          <li>test</li>
-          <li>test</li>
-          <li>test</li>
-          <li>test</li>
-          <li>test</li>
+          {fileList}
         </ul>
       </div>
     </div>;
@@ -490,6 +485,7 @@ var initialWiki = {
   title: "",
   readOnly: true,
   cursor: 0,
+  list: [],
   data:[
   ]
 }
@@ -510,6 +506,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
+        list: state.list,
         data: data
       };
     case "SETTITLE":
@@ -517,6 +514,15 @@ var wiki = function(state, action) {
         title: action.title,
         readOnly: state.readOnly,
         cursor: state.no,
+        list: state.list,
+        data: state.data
+      };
+    case "UPDATE_LIST":
+      return {
+        title: state.title,
+        readOnly: state.readOnly,
+        cursor: state.no,
+        list: action.list,
         data: state.data
       };
     case "FOCUS":
@@ -524,6 +530,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: action.no,
+        list: state.list,
         data: state.data
       };
     case "UP":
@@ -532,6 +539,7 @@ var wiki = function(state, action) {
           title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor - 1,
+          list: state.list,
           data: state.data
         }
       }else{
@@ -544,6 +552,7 @@ var wiki = function(state, action) {
           title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor + 1,
+          list: state.list,
           data: state.data
         }
       }else{
@@ -561,6 +570,7 @@ var wiki = function(state, action) {
           title: state.title,
           readOnly: state.readOnly,
           cursor: state.cursor,
+          list: state.list,
           data: data
       }
     case "APPEND":
@@ -574,6 +584,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
+        list: state.list,
         data: data
       }
     case "SPLIT":
@@ -585,6 +596,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
+        list: state.list,
         data: data
       }
     case "JOIN":
@@ -596,6 +608,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor - 1,
+        list: state.list,
         data: data
       }
     case "LIST":
@@ -613,6 +626,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
+        list: state.list,
         data:data
       }
     case "UNLIST":
@@ -630,6 +644,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: state.readOnly,
         cursor: state.cursor,
+        list: state.list,
         data:data
       }
     case "READONLY":
@@ -637,6 +652,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: true,
         cursor: state.cursor,
+        list: state.list,
         data: state.data
       };
     case "EDITABLE":
@@ -644,6 +660,7 @@ var wiki = function(state, action) {
         title: state.title,
         readOnly: false,
         cursor: state.cursor,
+        list: state.list,
         data: state.data
       };
     default:
@@ -657,6 +674,7 @@ var mapStateToProps = function(state){
     title: state.title,
     readOnly: state.readOnly,
     cursor: state.cursor,
+    list: state.list,
     data: state.data,
   }
 }

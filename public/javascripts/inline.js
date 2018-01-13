@@ -89,8 +89,7 @@ if(search){
 if(opts["title"]){
   // load
 
-  xhr('/file/' + opts["title"], function(o){
-    console.log(o);
+  xhr('/file/items/' + opts["title"], function(o){
     var s = o.body;
  
     // todo: require editor.js
@@ -102,6 +101,11 @@ if(opts["title"]){
       }
       store.dispatch({type: "FOCUS", no: 0});
       store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
+
+      xhr('/file/list', function(o){
+        store.dispatch({type: "UPDATE_LIST", list: o.list});
+      }, function(){});
+
     },100);
   
   }, function(){
@@ -124,7 +128,7 @@ if(opts["title"]){
   
     if(text != preText && firstSync == false){
       console.log("text diff!");
-      xhrPut('/file/' + opts["title"],function(){
+      xhrPut('/file/items/' + opts["title"],function(){
         preText= text;
       }, {title: decodeURIComponent(opts["title"]), body: text});
     }
