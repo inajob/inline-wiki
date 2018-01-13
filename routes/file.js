@@ -48,7 +48,7 @@ router.get( '/items/:title', function ( req, res ) {
 } );
 
 // PUT update data
-router.put( '/:title', authorize, function ( req, res ) {
+router.put( '/items/:title', authorize, function ( req, res ) {
   authorize(req, res, function(){
     fs.writeFileSync(path.join(baseDir, encodeURIComponent(req.params.title)+ '.txt'), req.body.body);
 
@@ -57,7 +57,7 @@ router.put( '/:title', authorize, function ( req, res ) {
 } );
 
 // DELETE remove data
-router.delete( '/:title', authorize, function ( req, res ) {
+router.delete( '/items/:title', authorize, function ( req, res ) {
   console.log(req.params.title)
   res.send("not support");
 } );
