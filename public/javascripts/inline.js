@@ -20,6 +20,27 @@ function xhr(url, f, errf){
   };
   xmlhttp.send();
 }
+// POST request
+function xhrPost(url, f, errf){
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("POST", url);
+  xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4){
+      if(xmlhttp.status == 200){
+        try{
+          var obj = JSON.parse(xmlhttp.responseText);
+          if(f){f(obj)}
+        }catch(e){
+          errf();
+        }
+      }else{
+        errf();
+      }
+    }
+  };
+  xmlhttp.send();
+}
+
 // PUT request
 function xhrPut(url, f, obj){
   var xmlhttp = new XMLHttpRequest();
@@ -29,6 +50,8 @@ function xhrPut(url, f, obj){
       if(xmlhttp.status == 200){
         var obj = JSON.parse(xmlhttp.responseText);
         if(f){f(obj)}
+      }else if(xmlhttp.status == 403){
+        // Todo: login required!
       }
     }
   };
@@ -39,7 +62,6 @@ function xhrPut(url, f, obj){
   xmlhttp.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
   xmlhttp.send(bodyList.join("&").replace(/%20/g, '+'));
 }
-
 
 function $(n){
   return document.getElementById(n);
@@ -57,12 +79,12 @@ if(search){
   console.log("options",opts);
 }
 
-if(opts["mode"] && opts["mode"] == "edit"){
-  // todo: require editor.js
-  setTimeout(function(){
-    store.dispatch({type: "EDITABLE"});
-  }, 1000);
-}
+//if(opts["mode"] && opts["mode"] == "edit"){
+//  // todo: require editor.js
+//  setTimeout(function(){
+//    store.dispatch({type: "EDITABLE"});
+//  }, 1000);
+//}
 
 if(opts["title"]){
   // load
@@ -95,18 +117,33 @@ if(opts["title"]){
   });
 
   var preText;
+  var firstSync = true;
   setInterval(function(){
     var list = dumpList();
     var text = list.join("\n")
   
-    if(text != preText){
+    if(text != preText && firstSync == false){
       console.log("text diff!");
       xhrPut('/file/' + opts["title"],function(){
         preText= text;
       }, {title: decodeURIComponent(opts["title"]), body: text});
     }
+
+    if(firstSync){
+      firstSync = false;
+      preText = text;
+    }
   
   },1000);
+
+  xhrPost('/loginCheck', function(o){
+    console.log("loginCheck", o);
+    if(o['isLogin'] == true){
+      setTimeout(function(){
+        store.dispatch({type: "EDITABLE"});
+      }, 1000);
+    }
+  });
 }
 
 

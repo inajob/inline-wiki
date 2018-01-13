@@ -10,23 +10,20 @@ var baseDir = path.join(__dirname, '..', 'public', 'pages');
 
 
 function authorize(req,response,next){
-  next();
-  /*
-  if(passport.session && passport.session.id){
+  //next();
+  if(req.user){
     return next();
   }
-  response.redirect('/login');
-  */
+  //response.redirect('/login');
+  response.status(403).send({'status': 'login required'})
 }
 
-/*
 // For Cross Origin
 router.all( '/*', function ( req, res, next ) {
     res.contentType( 'json' );
     res.header( 'Access-Control-Allow-Origin', '*' );
     next();
 } );
-*/
 
 // GET find all(not support?)
 router.get( '/', function ( req, res ) {
@@ -46,9 +43,11 @@ router.get( '/:title', function ( req, res ) {
 
 // PUT update data
 router.put( '/:title', authorize, function ( req, res ) {
-  fs.writeFileSync(path.join(baseDir, encodeURIComponent(req.params.title)+ '.txt'), req.body.body);
+  authorize(req, res, function(){
+    fs.writeFileSync(path.join(baseDir, encodeURIComponent(req.params.title)+ '.txt'), req.body.body);
 
-  res.send({'status': 'ok'});
+    res.send({'status': 'ok'});
+  });
 } );
 
 // DELETE remove data

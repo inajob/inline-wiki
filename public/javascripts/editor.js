@@ -433,11 +433,11 @@ var Lines = React.createClass({
       return false;
     }
   },
-  modeChange(){
+  login(){
     if(this.props.readOnly){
-      store.dispatch({type: "EDITABLE"});
+      // login
+      document.location.href="/auth/twitter?redirect=" + encodeURIComponent(this.props.title);
     }else{
-      store.dispatch({type: "READONLY"});
     }
   },
   back(){
@@ -449,8 +449,14 @@ var Lines = React.createClass({
       <div className="status-bar">
         <span>inline-wiki</span>
         <span>status</span>
+        {(() => {
+          if(this.props.readOnly){
+            return <span><a href={"/auth/twitter?redirect=" + encodeURIComponent(this.props.title)}>login</a></span>
+          }else{
+            // todo: logout
+          }
+        })()}
 
-        <span onClick={this.modeChange}>{this.props.readOnly?"edit":"view"}</span>
         <span onClick={this.back}>back</span>
       </div>
       <div className="wiki-body">

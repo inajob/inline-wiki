@@ -32,9 +32,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // passport-twitter用
+app.use(session({secret: 'test-salt'}));
 app.use(passport.initialize()); 
 app.use(passport.session()); 
-app.use(session({secret: 'test-salt'}));
 
 //app.use('/', index);
 //app.use('/users', users);
