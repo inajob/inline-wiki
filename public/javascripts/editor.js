@@ -171,7 +171,7 @@ function calcStyle(s){
     style['backgroundColor'] = "#ddf";
   }else if(s.indexOf(">>") == 0){
     style['backgroundColor'] = "#ffd";
-    style['border'] = "dashed 3px black";
+    style['border'] = "dashed 1px black";
     style['lineHeight'] = "1em";
     style['marginTop'] = "1em";
     style['marginBottom'] = "1em";
@@ -282,7 +282,7 @@ var Line = React.createClass({
   getEditElm: function(){
     if(isInline(this.props.raw)){
       return <div>
-        <textarea style={this.marge({height: this.state.height}, calcStyle(this.props.raw))} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
+        <textarea style={this.marge({height: this.state.height, border: "solid blue", borderWidth: "0px 0px 1px 0px"}, calcStyle(this.props.raw))} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
       </div>
     }else{ // not inline
       switch(getBlockType(this.props.raw)){
