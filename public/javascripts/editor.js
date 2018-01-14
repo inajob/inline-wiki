@@ -466,7 +466,7 @@ var Lines = React.createClass({
 
     var helloReact = <div className="text">
       <div className="status-bar">
-        <span>inline-wiki</span>
+        <span><a href="?">inline-wiki</a></span>
         <span>{this.props.status}</span>
         <span className="button" onClick={this.back}>back</span>
         <span className="button" onClick={this.junk}>junk</span>

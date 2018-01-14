@@ -1,4 +1,4 @@
-//window.addEventListener('load', function(){
+window.addEventListener('load', function(){
 
 // GET request
 function xhr(url, f, errf){
@@ -117,6 +117,7 @@ if(opts["title"] && opts["user"]){
       }else{
         //
         opts["title"] = "";
+        store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
       }
     }else{
       // not found
@@ -176,7 +177,6 @@ if(opts["title"] && opts["user"]){
       store.dispatch({type: "SETTITLE", title: opts["user"] + " PAGE LIST"});
         store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     },100);
-
   }, function(){});
 }else{
   xhr('/file/user_list', function(o){
@@ -195,4 +195,4 @@ if(opts["title"] && opts["user"]){
 }
 
 
-//});
+});

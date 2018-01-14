@@ -38,7 +38,12 @@ router.get( '/user_list', function ( req, res ) {
 router.get( '/list/:user', function ( req, res ) {
   try{
     fs.readdir(path.join(baseDir, req.params.user), function(err, files){
-      if(err) throw err;
+      if(err){
+        //throw err;
+        console.log(err);
+        res.send("error");
+        return;
+      }
       var fileList = files.filter(function(file){
         return fs.statSync(path.join(baseDir, req.params.user, file)).isFile() && /.*\.txt$/.test(file);
       });
