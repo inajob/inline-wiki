@@ -260,19 +260,6 @@ function numLines(s){
   return s.split(/[\r\n]/).length
 }
 
-function findLink(elm){
-  while(true){
-    if(elm.dataset.link){
-      return elm.dataset.link;
-    }
-    elm = elm.parentNode;
-    if(elm.className == "full"){
-      break;
-    }
-  }
-  return null;
-}
-
 var Line = React.createClass({
   getInitialState(){ return {height: "1em"}; },
   componentWillReceiveProps(nextProps){ this.setState({height: numLines(nextProps.raw) + "em"}) },
@@ -283,15 +270,7 @@ var Line = React.createClass({
     if(this.props.isRaw){ this.focus(); }
   },
   clickHandler:function(e){
-    var link = findLink(e.target);
-    if(link){
-      // todo jump page
-      console.log("link", link);
-      //store.dispatch({type:"JUMP", page: e.target.dataset.link});
-      document.location.href = "?mode=" + (store.getState().readOnly?"":"edit") + "&title=" + link;
-    }else{
-      store.dispatch({type:"FOCUS", no: this.props.lineNo});
-    }
+    store.dispatch({type:"FOCUS", no: this.props.lineNo});
   },
   marge: function(a,b){
     for(var x in b){ a[x] = b[x]; }

@@ -104,7 +104,12 @@ var inlineDecorator = (function(){
           case "link":
             list = tmp.split(/(\s+)/);
             out.push("<span class='tiny'>{{link </span>");
-            out.push("<a data-link='" +encodeURIComponent(list[2])+ "'>");
+            if(/^http(|s):\/\//.test(list[2])){
+              // todo: escape html string
+              out.push("<a href='" +(list[2])+ "'>");
+            }else{
+              out.push("<a href='?title=" +encodeURIComponent(list[2])+ "'>");
+            }
             if(list.length == 3){ // {{link target}}
               out.push(list[2]);
             }else if(list.length > 4){ // {link target body}}
