@@ -1,6 +1,7 @@
 // text/babel
 
 MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$']] } });
+mermaid.initialize({startOnLoad: true, theme: 'forest'});
 
  /*
 [x] enterで行を分割する
@@ -65,6 +66,23 @@ function blockToHTML(blockType, body, no){
         });
       }
       return "oembed... " + body;
+    case "mermaid":
+      var elm = document.createElement("div");
+      elm.innerHTML = body;
+      document.body.appendChild(elm);
+      try{
+        mermaid.parse(body);
+        var render = "";
+        mermaid.init(undefined, elm, function(){
+          render = elm.innerHTML;
+        });
+        document.body.removeChild(elm);
+        return render;
+      }catch(e){
+        console.log(e);
+        return e.str;
+      }
+      return "error";
     case "tex":
         var elm = document.createElement("div");
         elm.innerHTML = body;
@@ -122,7 +140,7 @@ function inline(s, no){
     }
     var html = blockToHTML(blockType, body, no);
 
-    return '<span class="block-type">&gt;&gt; ' + escapeHTML(blockType) + "</span><br/>" + html + '<br/><span class="block-type">&lt;&lt;</span>';
+    return '<span class="block-type">&gt;&gt; ' + escapeHTML(blockType) + "</span><div>" + html + '</div><span class="block-type">&lt;&lt;</span>';
   }else if(m = s.match(/^(\s*)(-+)/)){
     var spaces = m[0].length;
     var minuses = m[1].length;
@@ -170,8 +188,8 @@ function calcStyle(s){
     style['fontWeight'] = "bold";
     style['backgroundColor'] = "#ddf";
   }else if(s.indexOf(">>") == 0){
-    style['backgroundColor'] = "#ffd";
-    style['border'] = "dashed 1px black";
+    style['backgroundColor'] = "#fff";
+    //style['border'] = "dashed 1px black";
     style['lineHeight'] = "1em";
     style['marginTop'] = "1em";
     style['marginBottom'] = "1em";

@@ -1,5 +1,6 @@
 window.addEventListener('load', function(){
 
+
 // GET request
 function xhr(url, f, errf){
   var xmlhttp = new XMLHttpRequest();

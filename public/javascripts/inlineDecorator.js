@@ -37,7 +37,12 @@ var inlineDecorator = (function(){
     function inner(level){
       var out = [];
       while(true){
-        var cap = capture(body, ["{{","}}", "http://", "https://"], pos);
+        var cap;
+        if(level == 0){
+          cap = capture(body, ["{{","}}", "http://", "https://"], pos);
+        }else{
+          cap = capture(body, ["{{","}}"], pos);
+        }
         if(cap.target == "{{"){
           out.push(newPiece("text", body.slice(pos, cap.pos)));
           pos = cap.pos + "{{".length;
@@ -48,7 +53,7 @@ var inlineDecorator = (function(){
           if(level > 0){
             break;
           }
-        }else if(cap.target=="https://" || cap.target == "http://"){
+        }else if((cap.target=="https://" || cap.target == "http://")){
           if(pos != cap.pos){
             out.push(newPiece("text", body.slice(pos, cap.pos)));
           }

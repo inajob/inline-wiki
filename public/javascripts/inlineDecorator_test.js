@@ -33,8 +33,19 @@ describe('parse', function(){
       [{kind: "text",body: "fuga"}],
       {kind: "text",body: "piyo"},
     ],
+
     {kind: "text",body: "yz"},
   ])});
+  it('入れ子2', function(){assert.deepEqual(id.parse("ab{{link {{img http://hoge/a}} piyo}}yz", 0),[
+    {kind: "text",body: "ab"},
+    [
+      {kind: "text",body: "link "},
+      [{kind: "text",body: "img http://hoge/a"}],
+      {kind: "text",body: " piyo"},
+    ],
+    {kind: "text",body: "yz"},
+  ])});
+
   it('崩れてる', function(){assert.deepEqual(id.parse("ab{{hoge", 0),[
     {kind: "text",body: "ab"},
     [{kind: "text",body: "hoge"}],
