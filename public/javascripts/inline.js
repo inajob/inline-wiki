@@ -1,4 +1,4 @@
-window.addEventListener('load', function(){
+//window.addEventListener('load', function(){
 
 // GET request
 function xhr(url, f, errf){
@@ -104,7 +104,7 @@ if(opts["title"] && opts["user"]){
       store.dispatch({type: "FOCUS", no: 0});
       store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
       store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
-    },10);
+    },1);
   
   }, function(){
     if(loginUser && opts["user"] == loginUser){
@@ -120,6 +120,7 @@ if(opts["title"] && opts["user"]){
       }
     }else{
       // not found
+      store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
     }
   });
   setTimeout(function(){
@@ -194,4 +195,4 @@ if(opts["title"] && opts["user"]){
 }
 
 
-});
+//});
