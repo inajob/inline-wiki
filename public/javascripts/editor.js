@@ -260,6 +260,19 @@ function numLines(s){
   return s.split(/[\r\n]/).length
 }
 
+function findLink(elm){
+  while(true){
+    if(elm.dataset.link){
+      return elm.dataset.link;
+    }
+    elm = elm.parentNode;
+    if(elm.className == "full"){
+      break;
+    }
+  }
+  return null;
+}
+
 var Line = React.createClass({
   getInitialState(){ return {height: "1em"}; },
   componentWillReceiveProps(nextProps){ this.setState({height: numLines(nextProps.raw) + "em"}) },
@@ -270,7 +283,12 @@ var Line = React.createClass({
     if(this.props.isRaw){ this.focus(); }
   },
   clickHandler:function(e){
-    store.dispatch({type:"FOCUS", no: this.props.lineNo});
+    var link = findLink(e.target);
+    if(link){
+      document.location.href = "?user="+ this.props.user +"&title=" + link;
+    }else{
+      store.dispatch({type:"FOCUS", no: this.props.lineNo});
+    }
   },
   marge: function(a,b){
     for(var x in b){ a[x] = b[x]; }
@@ -430,13 +448,6 @@ var Lines = React.createClass({
       return false;
     }
   },
-  login(){
-    if(this.props.readOnly){
-      // login
-      document.location.href="/auth/twitter?redirect=" + encodeURIComponent(this.props.title);
-    }else{
-    }
-  },
   back(){
     history.back();
   },
@@ -447,11 +458,11 @@ var Lines = React.createClass({
       ("0" + d.getHours()).slice(-2) +
       ("0" + d.getMinutes()).slice(-2) +
       ("0" + d.getSeconds()).slice(-2);
-    document.location.href = "?title=" + title;
+    document.location.href = "?title=" + title + "&user=" + this.props.user;
   },
   render() {
-    var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
-    var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file}>{decodeURIComponent(file)}</a></li>);
+    var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
+    var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file + "&user=" + this.props.user}>{decodeURIComponent(file)}</a></li>);
 
     var helloReact = <div className="text">
       <div className="status-bar">
@@ -461,7 +472,7 @@ var Lines = React.createClass({
         <span className="button" onClick={this.junk}>junk</span>
         {(() => {
           if(this.props.readOnly){
-            return <span><a href={"/auth/twitter?redirect=" + encodeURIComponent(this.props.title)}>login</a></span>
+            return <span><a href={"/auth/twitter?redirect_title=" + encodeURIComponent(this.props.title) + "&redirect_user=" + encodeURIComponent(this.props.user)}>login</a></span>
           }else{
             // todo: logout
           }
@@ -490,6 +501,7 @@ var Lines = React.createClass({
 
 var initialWiki = {
   title: "",
+  user: "",
   readOnly: true,
   cursor: 0,
   status: "test",
@@ -512,6 +524,7 @@ var wiki = function(state, action) {
       data[action.no] = {raw: state.data[action.no].raw, preview: action.preview};
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: state.status,
@@ -521,15 +534,28 @@ var wiki = function(state, action) {
     case "SETTITLE":
       return {
         title: action.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: state.status,
         list: state.list,
         data: state.data
       };
+    case "SETUSER":
+      return {
+        title: state.title,
+        user: action.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        data: state.data
+      };
+ 
     case "UPDATE_LIST":
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: state.status,
@@ -539,6 +565,7 @@ var wiki = function(state, action) {
     case "UPDATE_STATUS":
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: action.status,
@@ -548,6 +575,7 @@ var wiki = function(state, action) {
     case "FOCUS":
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: action.no,
         status: state.status,
@@ -558,6 +586,7 @@ var wiki = function(state, action) {
       if(state.cursor > 0){
         return {
           title: state.title,
+          user: state.user,
           readOnly: state.readOnly,
           cursor: state.cursor - 1,
           status: state.status,
@@ -572,6 +601,7 @@ var wiki = function(state, action) {
       if(state.cursor + 1 < state.data.length){
         return {
           title: state.title,
+          user: state.user,
           readOnly: state.readOnly,
           cursor: state.cursor + 1,
           status: state.status,
@@ -591,6 +621,7 @@ var wiki = function(state, action) {
       data[state.cursor] = {raw: action.text, preview: data[state.cursor].preview};
       return {
           title: state.title,
+          user: state.user,
           readOnly: state.readOnly,
           cursor: state.cursor,
           status: state.status,
@@ -606,6 +637,7 @@ var wiki = function(state, action) {
       });
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
         status: state.status,
@@ -619,6 +651,7 @@ var wiki = function(state, action) {
       data.splice(state.cursor, 0, {raw: action.first, preview: ""});
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor + 1,
         status: state.status,
@@ -632,6 +665,7 @@ var wiki = function(state, action) {
       data.splice(state.cursor, 1);
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor - 1,
         status: state.status,
@@ -651,6 +685,7 @@ var wiki = function(state, action) {
       data[state.cursor] = {raw: tmp, preview: ""};
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: state.status,
@@ -670,6 +705,7 @@ var wiki = function(state, action) {
       }
       return {
         title: state.title,
+        user: state.user,
         readOnly: state.readOnly,
         cursor: state.cursor,
         status: state.status,
@@ -679,6 +715,7 @@ var wiki = function(state, action) {
     case "READONLY":
       return {
         title: state.title,
+        user: state.user,
         readOnly: true,
         cursor: state.cursor,
         status: state.status,
@@ -688,6 +725,7 @@ var wiki = function(state, action) {
     case "EDITABLE":
       return {
         title: state.title,
+        user: state.user,
         readOnly: false,
         cursor: state.cursor,
         status: state.status,
@@ -703,6 +741,7 @@ var store = Redux.createStore(wiki);
 var mapStateToProps = function(state){
   return {
     title: state.title,
+    user: state.user,
     readOnly: state.readOnly,
     cursor: state.cursor,
     status: state.status,

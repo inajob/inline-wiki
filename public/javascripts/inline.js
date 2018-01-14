@@ -1,6 +1,5 @@
 window.addEventListener('load', function(){
 
-
 // GET request
 function xhr(url, f, errf){
   var xmlhttp = new XMLHttpRequest();
@@ -80,6 +79,8 @@ if(search){
   console.log("options",opts);
 }
 
+var loginUser = "";
+
 //if(opts["mode"] && opts["mode"] == "edit"){
 //  // todo: require editor.js
 //  setTimeout(function(){
@@ -87,10 +88,10 @@ if(search){
 //  }, 1000);
 //}
 
-if(opts["title"]){
+if(opts["title"] && opts["user"]){
   // load
 
-  xhr('/file/items/' + opts["title"], function(o){
+  xhr('/file/items/' + opts['user'] + '/' + opts["title"], function(o){
     var s = o.body;
  
     // todo: require editor.js
@@ -102,24 +103,30 @@ if(opts["title"]){
       }
       store.dispatch({type: "FOCUS", no: 0});
       store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
-
-      xhr('/file/list', function(o){
-        store.dispatch({type: "UPDATE_LIST", list: o.list});
-      }, function(){});
-
+      store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     },10);
   
   }, function(){
-    if(confirm("This page seems to be empty, create new page?")){
-      //
-      store.dispatch({type: "APPEND", text: "not-found"});
-      store.dispatch({type: "FOCUS", no: 0});
-      store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
+    if(loginUser && opts["user"] == loginUser){
+      if(confirm("This page seems to be empty, create new page?")){
+        //
+        store.dispatch({type: "APPEND", text: "not-found"});
+        store.dispatch({type: "FOCUS", no: 0});
+        store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
+        store.dispatch({type: "SETUSER", user: decodeURIComponent(loginUser)});
+      }else{
+        //
+        opts["title"] = "";
+      }
     }else{
-      //
-      opts["title"] = "";
+      // not found
     }
   });
+  setTimeout(function(){
+    xhr('/file/list/' + opts['user'] + '', function(o){
+      store.dispatch({type: "UPDATE_LIST", list: o.list});
+    }, function(){});
+  }, 10);
 
   var preText;
   var firstSync = true;
@@ -130,7 +137,7 @@ if(opts["title"]){
     if(text != preText && firstSync == false){
       console.log("text diff!");
       store.dispatch({type: "UPDATE_STATUS", status: "saving.."});
-      xhrPut('/file/items/' + opts["title"],function(){
+      xhrPut('/file/items/' + loginUser + '/' + opts["title"],function(){
         preText= text;
         store.dispatch({type: "UPDATE_STATUS", status: "synced!"});
       }, {title: decodeURIComponent(opts["title"]), body: text});
@@ -146,11 +153,44 @@ if(opts["title"]){
   xhrPost('/loginCheck', function(o){
     console.log("loginCheck", o);
     if(o['isLogin'] == true){
+      loginUser = o['user'];
       setTimeout(function(){
         store.dispatch({type: "EDITABLE"});
       }, 100);
     }
   });
+}else if(opts["user"]){
+  xhr('/file/list/' + opts['user'] + '', function(o){
+    store.dispatch({type: "UPDATE_LIST", list: o.list});
+
+    var tmpList = o.list;
+    var tmp;
+    setTimeout(function(){
+      for(var i = 0; i < tmpList.length; i ++){
+        tmp = "- {{link " + decodeURIComponent(tmpList[i]) + "}}";
+        store.dispatch({type: "APPEND", text: tmp});
+        preview(store.getState().cursor - 1, tmp);
+      }
+      store.dispatch({type: "FOCUS", no: 0});
+      store.dispatch({type: "SETTITLE", title: opts["user"] + " PAGE LIST"});
+        store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
+    },100);
+
+  }, function(){});
+}else{
+  xhr('/file/user_list', function(o){
+    var tmpList = o.list;
+    var tmp;
+    setTimeout(function(){
+      for(var i = 0; i < tmpList.length; i ++){
+        tmp = "- {{user " + tmpList[i] + "}}";
+        store.dispatch({type: "APPEND", text: tmp});
+        preview(store.getState().cursor - 1, tmp);
+      }
+      store.dispatch({type: "FOCUS", no: 0});
+      store.dispatch({type: "SETTITLE", title: "USER LIST"});
+    },100);
+  },function(){});
 }
 
 

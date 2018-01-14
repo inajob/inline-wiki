@@ -6,7 +6,7 @@ configRoutes = function(app, passport) {
     app.post('/loginCheck', function(request, response) {
         // 認証保護
         if(request.user){
-            response.send({isLogin: true});
+            response.send({isLogin: true, user: request.user});
         } else {
             response.send({isLogin: false});
         }   
@@ -28,12 +28,12 @@ configRoutes = function(app, passport) {
     // passport-twitter ----->
     // http://passportjs.org/guide/twitter/
     app.get('/auth/twitter', function(req, res){
-      req.session.redirect = req.query.redirect;
+      req.session.redirect_title = req.query.redirect_title;
+      req.session.redirect_user = req.query.redirect_user;
       passport.authenticate('twitter')(req,res);
     });
     app.get('/auth/twitter/callback', function(req, res){
-        console.log(req.session.redirect)
-        passport.authenticate('twitter', { successRedirect: '/inline.html?title='+req.session.redirect,
+        passport.authenticate('twitter', { successRedirect: '/inline.html?title='+req.session.redirect_title + '&user=' + req.session.redirect_user,
                                                 failureRedirect: '/login' })(req, res);
       }
     );

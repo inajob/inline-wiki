@@ -77,7 +77,7 @@ var inlineDecorator = (function(){
     return inner(0);
   }
 
-  function htmlEncode(body){
+  function htmlEncode(body, user){
     var out = [];
     var tmp;
     var list;
@@ -101,6 +101,19 @@ var inlineDecorator = (function(){
         console.log(m,cmd,remain);
 
         switch(cmd){
+          case "user":
+            list = tmp.split(/(\s+)/);
+            out.push("<span class='tiny'>{{user </span>");
+            out.push("<a href='?user=" + encodeURIComponent(list[2]) + "'>");
+            if(list.length == 3){ // {{link target}}
+              out.push(list[2]);
+            }else if(list.length > 4){ // {link target body}}
+              remain = tmp.slice((list[0] + list[1] + list[2] + list[3]).length);
+              out.push(remain);
+            }
+            out.push("</a>")
+            out.push("<span class='tiny'>}}</span>");
+          break;
           case "link":
             list = tmp.split(/(\s+)/);
             out.push("<span class='tiny'>{{link </span>");
@@ -108,7 +121,7 @@ var inlineDecorator = (function(){
               // todo: escape html string
               out.push("<a href='" +(list[2])+ "'>");
             }else{
-              out.push("<a href='?title=" +encodeURIComponent(list[2])+ "'>");
+              out.push("<a data-link='" + encodeURIComponent(list[2]) + "'>");
             }
             if(list.length == 3){ // {{link target}}
               out.push(list[2]);
