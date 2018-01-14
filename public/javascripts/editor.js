@@ -417,7 +417,7 @@ var Lines = React.createClass({
         if(isInline(text)){
           ret = false
             if(isList(text)){
-              this.actionCreate({type: "SPLIT", first: text, second: getListNestString(text)});
+              this.actionCreate({type: "SPLIT", first: text.substr(0,e.target.selectionStart), second: getListNestString(text) + text.substr(e.target.selectionStart)});
             }else{
               this.actionCreate({type: "SPLIT", first: text.substr(0,e.target.selectionStart), second: text.substr(e.target.selectionStart)});
             }
