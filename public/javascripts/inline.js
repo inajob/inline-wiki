@@ -128,8 +128,10 @@ if(opts["title"]){
   
     if(text != preText && firstSync == false){
       console.log("text diff!");
+      store.dispatch({type: "UPDATE_STATUS", status: "saving.."});
       xhrPut('/file/items/' + opts["title"],function(){
         preText= text;
+        store.dispatch({type: "UPDATE_STATUS", status: "synced!"});
       }, {title: decodeURIComponent(opts["title"]), body: text});
     }
 
