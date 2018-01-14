@@ -107,7 +107,7 @@ if(opts["title"]){
         store.dispatch({type: "UPDATE_LIST", list: o.list});
       }, function(){});
 
-    },100);
+    },10);
   
   }, function(){
     if(confirm("This page seems to be empty, create new page?")){
@@ -148,7 +148,7 @@ if(opts["title"]){
     if(o['isLogin'] == true){
       setTimeout(function(){
         store.dispatch({type: "EDITABLE"});
-      }, 1000);
+      }, 100);
     }
   });
 }

@@ -440,6 +440,15 @@ var Lines = React.createClass({
   back(){
     history.back();
   },
+  junk(){
+    var d = new Date();
+    var title = d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) +
+      ("0" + d.getDate()).slice(-2) +
+      ("0" + d.getHours()).slice(-2) +
+      ("0" + d.getMinutes()).slice(-2) +
+      ("0" + d.getSeconds()).slice(-2);
+    document.location.href = "?title=" + title;
+  },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
     var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file}>{decodeURIComponent(file)}</a></li>);
@@ -448,6 +457,8 @@ var Lines = React.createClass({
       <div className="status-bar">
         <span>inline-wiki</span>
         <span>{this.props.status}</span>
+        <span className="button" onClick={this.back}>back</span>
+        <span className="button" onClick={this.junk}>junk</span>
         {(() => {
           if(this.props.readOnly){
             return <span><a href={"/auth/twitter?redirect=" + encodeURIComponent(this.props.title)}>login</a></span>
@@ -456,7 +467,6 @@ var Lines = React.createClass({
           }
         })()}
 
-        <span onClick={this.back}>back</span>
       </div>
       <div className="wiki-body">
         <h1 className="wiki-title">{this.props.title}</h1>
