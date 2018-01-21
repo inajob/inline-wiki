@@ -4,3 +4,8 @@ pipeline:
     repo: kinadu/inline-wiki
     tags: latest
     secrets: [ docker_username, docker_password ]
+  kubernetes:
+    image: vallard/drone-kube
+    template: manifests/deployment.yaml.tmpl
+    namespace: default
+    secrets: [ kube_server, kube_token ]
