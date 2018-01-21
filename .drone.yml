@@ -1,6 +1,9 @@
 pipeline:
   docker:
     image: plugins/docker
+    commands:
+      - echo "test echo"
+      - echo $DOCKER_USERNAME
     repo: kinadu/inline-wiki
     tags: latest
     secrets: [ docker_username, docker_password ]
