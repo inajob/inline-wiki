@@ -7,6 +7,6 @@ pipeline:
   kubernetes:
     image: gcr.io/google_containers/hyperkube-amd64:v1.9.2
     commands:
-      - UPDATE_AT=`date +%s`
+      - ecport UPDATE_AT=`date +%s`
       - kubectl --server $KUBE_SERVER --token $KUBE_TOKEN --insecure-skip-tls-verify patch deployment.apps node-wiki -n wiki -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"force-update.inajob-tk/updated-at\":\"$UPDATED_AT\"}}}}}"
     secrets: [ kube_server, kube_token, kube_ca, kube_cacert ]
