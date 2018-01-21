@@ -8,4 +8,4 @@ pipeline:
     image: vallard/drone-kube
     template: manifests/deployment.yaml.tmpl
     namespace: default
-    secrets: [ kube_server, kube_token ]
+    secrets: [ kube_server, kube_token, kube_ca ]
