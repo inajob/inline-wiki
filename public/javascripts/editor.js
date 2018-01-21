@@ -409,8 +409,12 @@ var Lines = React.createClass({
           ret = false;
           this.actionCreate({type:"CHANGETEXT", text: ""});
         }else if(cursorPos[0] == 0 && cursorPos[1] == 0){
-          ret = false;
-          this.actionCreate({type:"JOIN"});
+          if(e.target.selectionStart != e.target.selectionEnd){
+            ret = true;
+          }else{
+            ret = false;
+            this.actionCreate({type:"JOIN"});
+          }
         }
         break;
       case 37: //left
