@@ -341,8 +341,9 @@ function preview(no, raw){
 }
 
 var Lines = React.createClass({
-  actionCreate: function(action){
-    var cursor = this.props.cursor;
+  actionCreate: function(action, offset){
+    offset = offset || 0; // if you change multiple lines in one function call, set offset to preview correct lines
+    var cursor = this.props.cursor + offset;
     store.dispatch(action);
     var line;
     // preview
@@ -367,11 +368,22 @@ var Lines = React.createClass({
   },
   changeText:function(e) {
     var text = e.target.value;
+
     if(isInline(text) && numLines(text) > 1){
       console.log(text, isInline(text), numLines(text) > 1)
-        text = text.replace(/[\r\n]/g, " ");
+      var list = text.split(/[\r\n]/);
+      var tmpList = loadList(list);
+
+      for(var i = 0; i < tmpList.length - 1; i ++){
+        // todo: type INSRET
+        this.actionCreate({type: "SPLIT",
+          first: tmpList[i],
+          second: tmpList[i + 1],
+        }, i);
+      }
+    }else{
+      this.actionCreate({type: "CHANGETEXT", text: text});
     }
-    this.actionCreate({type: "CHANGETEXT", text: text});
   },
   keyHandler:function(e) {
     var cursor = this.props.cursor;
