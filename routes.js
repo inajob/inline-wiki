@@ -12,7 +12,6 @@ configRoutes = function(app, passport) {
         }   
     });
 
-
     app.get('/secret', function(request, response) {
         // 認証保護
         if(passport.session && passport.session.id){
