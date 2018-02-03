@@ -469,12 +469,12 @@ var Lines = React.createClass({
   },
   junk(){
     var d = new Date();
-    var title = d.getFullYear() + ("0" + (d.getMonth() + 1)).slice(-2) +
-      ("0" + d.getDate()).slice(-2) +
+    var title = "/diary/"+d.getFullYear() + '-' + ("0" + (d.getMonth() + 1)).slice(-2) + '-' +
+      ("0" + d.getDate()).slice(-2) + '-' +
       ("0" + d.getHours()).slice(-2) +
       ("0" + d.getMinutes()).slice(-2) +
       ("0" + d.getSeconds()).slice(-2);
-    document.location.href = "?title=" + title + "&user=" + this.props.user;
+    document.location.href = "?title=" + encodeURIComponent(title) + "&user=" + this.props.user;
   },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
