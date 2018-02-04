@@ -10,7 +10,6 @@ var session = require('express-session')
 var auth = require('./passport');
 var passport = auth.passport;
 
-var users = require('./routes/users');
 var data = require( './routes/data' );
 var contents = require( './routes/contents' );
 var file = require( './routes/file' );
