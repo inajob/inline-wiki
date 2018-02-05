@@ -128,6 +128,16 @@ if(opts["title"] && opts["user"]){
     xhr('/file/list/' + opts['user'] + '', function(o){
       store.dispatch({type: "UPDATE_LIST", list: o.list});
     }, function(){});
+
+    store.dispatch({type: "UPDATE_SIDEBAR", sideData: [
+      "#test side",
+      "bar",
+      ">> code\ntest",
+      "test",
+      ">> tex\ntest",
+      "hoge"
+    ]});
+
   }, 10);
 
   var preText;

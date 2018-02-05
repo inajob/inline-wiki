@@ -36,7 +36,7 @@ function jsonp(name, src, f){
   document.body.appendChild(script);
 }
 
-function blockToHTML(blockType, body, no){
+function blockToHTML(blockType, body, no, previewAction){
   switch(blockType){
     case "code":
       return '<pre>' + hljs.fixMarkup(hljs.highlightAuto(body).value) + '</pre>';
@@ -61,7 +61,7 @@ function blockToHTML(blockType, body, no){
           //
           console.log(data);
           var body = '<span class="block-type">&gt;&gt; oembed</span><br/>' + data.html + '<br/><span class="block-type">&lt;&lt; by noembed.com</span>';
-          store.dispatch({type: "PREVIEW", no: no, preview: body});
+          store.dispatch({type: previewAction, no: no, preview: body});
           twttr.widgets.load()
         });
       }
@@ -93,7 +93,7 @@ function blockToHTML(blockType, body, no){
           console.log("preview",elm);
           var body = '<span class="block-type">&gt;&gt; tex</span><br/>' + elm.innerHTML + '<br/><span class="block-type">&lt;&lt;</span>';
 
-          store.dispatch({type: "PREVIEW", no: no, preview: body});
+          store.dispatch({type: previewAction, no: no, preview: body});
           // mathjs doesn't render if don't insert the element.
           document.getElementById("math").removeChild(elm);
         });
@@ -124,7 +124,7 @@ function escapeHTML(s){
 }
 
 // convert 1 line string to html decorate string
-function inline(s, no){
+function inline(s, no, previewAction){
   var m;
   if(s.indexOf("###") == 0){
     return '<div>' + '<span class="small">###</span>' + escapeHTML(s.substring(3)) + "</div>";
@@ -138,7 +138,7 @@ function inline(s, no){
     if(body == undefined){
       body = "";
     }
-    var html = blockToHTML(blockType, body, no);
+    var html = blockToHTML(blockType, body, no, previewAction);
 
     return '<span class="block-type">&gt;&gt; ' + escapeHTML(blockType) + "</span><div>" + html + '</div><span class="block-type">&lt;&lt;</span>';
   }else if(m = s.match(/^(\s*)(-+)/)){
@@ -336,7 +336,7 @@ var Line = React.createClass({
 });
 
 function preview(no, raw){
-  var line = inline(raw, no);
+  var line = inline(raw, no, "PREVIEW");
   store.dispatch({type: "PREVIEW", no: no, preview: line});
 }
 
@@ -464,6 +464,9 @@ var Lines = React.createClass({
       return false;
     }
   },
+  nil(){
+    // pass
+  },
   back(){
     history.back();
   },
@@ -479,6 +482,7 @@ var Lines = React.createClass({
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
     var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file + "&user=" + this.props.user}>{decodeURIComponent(file)}</a></li>);
+    var sideBar = this.props.sideData.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={false} changeText={this.nil} keyHandler={this.nil} ref={"line" + i} />);
 
     var helloReact = <div className="text">
       <div className="status-bar">
@@ -505,6 +509,9 @@ var Lines = React.createClass({
       </div>
       
       <div className="side-bar">
+        <div>
+        {sideBar}
+        </div>
         <ul>
           {fileList}
         </ul>
@@ -522,6 +529,7 @@ var initialWiki = {
   cursor: 0,
   status: "test",
   list: [],
+  sideData: [],
   data:[
   ]
 }
@@ -536,7 +544,6 @@ var wiki = function(state, action) {
     case "PREVIEW":
       var data = [];
       state.data.map((e,i) => {data[i] = e;});
-
       data[action.no] = {raw: state.data[action.no].raw, preview: action.preview};
       return {
         title: state.title,
@@ -545,7 +552,22 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: data
+      };
+    case "SIDE_PREVIEW":
+      var data = [];
+      state.sideData.map((e,i) => {data[i] = e;});
+      data[action.no] = {raw: state.sideData[action.no].raw, preview: action.preview};
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        sideData: data,
+        data: state.data
       };
     case "SETTITLE":
       return {
@@ -555,6 +577,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
     case "SETUSER":
@@ -565,6 +588,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
  
@@ -576,6 +600,21 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: action.list,
+        sideData: state.sideData,
+        data: state.data
+      };
+    case "UPDATE_SIDEBAR":
+      var data = [];
+      action.sideData.map((e,i) => {data[i] = {raw: e, preview: inline(e, i, "SIDE_PREVIEW")};}); // todo can't preview block
+
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        sideData: data,
         data: state.data
       };
     case "UPDATE_STATUS":
@@ -586,6 +625,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: action.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
     case "FOCUS":
@@ -596,6 +636,7 @@ var wiki = function(state, action) {
         cursor: action.no,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
     case "UP":
@@ -607,6 +648,7 @@ var wiki = function(state, action) {
           cursor: state.cursor - 1,
           status: state.status,
           list: state.list,
+          sideData: state.sideData,
           data: state.data
         }
       }else{
@@ -622,6 +664,7 @@ var wiki = function(state, action) {
           cursor: state.cursor + 1,
           status: state.status,
           list: state.list,
+          sideData: state.sideData,
           data: state.data
         }
       }else{
@@ -642,6 +685,7 @@ var wiki = function(state, action) {
           cursor: state.cursor,
           status: state.status,
           list: state.list,
+          sideData: state.sideData,
           data: data
       }
     case "APPEND":
@@ -658,6 +702,7 @@ var wiki = function(state, action) {
         cursor: state.cursor + 1,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: data
       }
     case "SPLIT":
@@ -672,6 +717,7 @@ var wiki = function(state, action) {
         cursor: state.cursor + 1,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: data
       }
     case "JOIN":
@@ -686,6 +732,7 @@ var wiki = function(state, action) {
         cursor: state.cursor - 1,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: data
       }
     case "LIST":
@@ -706,6 +753,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data:data
       }
     case "UNLIST":
@@ -726,6 +774,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data:data
       }
     case "READONLY":
@@ -736,6 +785,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
     case "EDITABLE":
@@ -746,6 +796,7 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        sideData: state.sideData,
         data: state.data
       };
     default:
@@ -762,6 +813,7 @@ var mapStateToProps = function(state){
     cursor: state.cursor,
     status: state.status,
     list: state.list,
+    sideData: state.sideData,
     data: state.data,
   }
 }
