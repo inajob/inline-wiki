@@ -37,7 +37,7 @@ body{
 .wiki-body{
   margin-top:2em;
   margin-left:10em;
-  margin-right:3em;
+  margin-right:0em;
   border:solid 6px #aaf;
   border-radius: 25px;
 }
@@ -48,24 +48,42 @@ pre {
   padding:5px;
 }
 .h1{
-  font-size:4em;
-  padding:3px;
+  border: solid #aaf;
+  border-width: 0px 0px 0px 30px;
+  border-radius: 20px 0px 0px 20px;
+  margin-left: -20px;
+  font-size: 2em;
+  font-weight: bold;
+  background-color: #ddf
 }
 .h2{
-  font-size:3em;
-  padding:3px;
+  border: solid #aaf;
+  border-width: 0px 0px 5px 0px;
+  font-weight: bold;
+  font-size: 1.5em;
+  background-color: #ddf;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
 .h3{
-  font-size:2em;
-  padding:3px;
+  font-weight: bold;
+  font-size: 1em;
+  border: solid;
+  border-width: 0px 0px 1px 0px;
 }
 .block-type{
-  background-color:#ddd;
-  color:#333;
-  padding-left:3px;
-  padding-right:3px;
-  border-radius:3px;
-  font-size:xx-small;
+  background-color:#fff;
+  line-height: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+.blank{
+  color: #aaa;
+}
+.normal{
+  padding: 3px;
+  font-size: 1em;
+  line-height: 1.2em;
 }
 .status-bar{
   background-color:#333;
@@ -92,16 +110,7 @@ pre {
   top:1em;
   left:0px;
   margin-top:1em;
-}
-.side-bar ul{
-  margin: 2px;
-}
-.side-bar li{
-  list-style-type: none;
-  border:solid 2px #aaf;
-  border-width: 1px 1px 1px 5px;
-  margin-top:3px;
-  background-color: #ddf;
+  width: 8em;
 }
 .debug-console{
   border: solid 1px;
@@ -111,7 +120,6 @@ pre {
   font-size:xx-small;
   margin-top:30px;
 }
-
 .small{
   display:inline-block;
   background-color:#ddd;
@@ -123,12 +131,10 @@ pre {
   color:gray;
   font-size:xx-small;
 }
-
 .list-pre{
   color:#ccc;
   letter-spacing: 12px;
 }
-
 .list{
   color:#333;
   letter-spacing: 12px;
@@ -138,7 +144,6 @@ pre {
 }
 .full{
 }
-
 .full textarea{
   width:90%;
   height:1em;

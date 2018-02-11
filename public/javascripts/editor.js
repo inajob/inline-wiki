@@ -39,7 +39,7 @@ function jsonp(name, src, f){
 function blockToHTML(blockType, body, no, previewAction){
   switch(blockType){
     case "code":
-      return '<pre>' + hljs.fixMarkup(hljs.highlightAuto(body).value) + '</pre>';
+      return '<pre class="hljs">' + hljs.fixMarkup(hljs.highlightAuto(body).value) + '</pre>';
     case "image":
         return '<img class="paste" alt="' + body + '" src="' + body + '" />';
     case "oembed":
@@ -156,53 +156,26 @@ function inline(s, no, previewAction){
     return escapeHTML(s);
   }
 }
-// return style of textarea and render
-function calcStyle(s){
-  var style = {
-    //"fontFamily": "monospace",
-    "padding": "3px",
-    "fontSize": "1em",
-    "lineHeight": "1.2em",
-  };
+function calcClass(s){
+  var ret = "";
   if(s.indexOf("###") == 0){
-    style['fontWeight'] = "bold";
-    style['fontSize'] = "1em";
-    style['border'] = "solid";
-    style['borderWidth'] = "0px 0px 1px 0px";
-
+    ret = "h3";
   }else if(s.indexOf("##")==0){
-    style['border'] = "solid #aaf";
-    style['borderWidth'] = "0px 0px 5px 0px";
-    style['fontWeight'] = "bold";
-    style['fontSize'] = "1.5em";
-    style['backgroundColor'] = "#ddf";
-    style['marginTop'] = "0.5em";
-    style['marginBottom'] = "0.5em";
-
+    ret = "h2";
   }else if(s.indexOf("#")==0){
-    style['border'] = "solid #aaf";
-    style['borderWidth'] = "0px 0px 0px 30px";
-    style['borderRadius'] = "20px 0px 0px 20px";
-    style['marginLeft'] = "-20px";
-    style['fontSize'] = "2em";
-    style['fontWeight'] = "bold";
-    style['backgroundColor'] = "#ddf";
+    ret = "h1";
   }else if(s.indexOf(">>") == 0){
-    style['backgroundColor'] = "#fff";
-    //style['border'] = "dashed 1px black";
-    style['lineHeight'] = "1em";
-    style['marginTop'] = "1em";
-    style['marginBottom'] = "1em";
+    ret = "block-type";
   }else if(s.match(/^(\s*)(-+)/)){
-    //style['padding'] = "0px";
+    ret = "normal";
   }else if(s.length == 0){
-    style['color'] = "#aaa";
+    ret = "blank";
   }else{
-    style['lineHeight'] = "1.2em";
-    style['fontSize'] = "1em";
+    ret = "normal";
   }
-  return style;
+  return ret;
 }
+
 // is this not block?
 function isInline(s){
   return s.indexOf(">>") != 0;
@@ -297,14 +270,14 @@ var Line = React.createClass({
   getEditElm: function(){
     if(isInline(this.props.raw)){
       return <div>
-        <textarea style={this.marge({height: this.state.height, border: "solid blue", borderWidth: "0px 0px 1px 0px"}, calcStyle(this.props.raw))} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
+        <textarea className={calcClass(this.props.raw)} style={{height: this.state.height}} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
       </div>
     }else{ // not inline
       switch(getBlockType(this.props.raw)){
         case "image":
           return <div className="twin cf">
             <div className="half">
-              <textarea style={this.marge({height: this.state.height}, calcStyle(this.props.raw))} ref="rawInput" value={">> image\n[binary-image-data]"} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
+              <textarea className={calcClass(this.props.raw)} style={{height: this.state.height}} ref="rawInput" value={">> image\n[binary-image-data]"} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
             </div>
             <div className="half" dangerouslySetInnerHTML={{__html: this.props.preview}}>
             </div>
@@ -313,7 +286,7 @@ var Line = React.createClass({
         default:
           return <div className="twin cf">
             <div className="half">
-              <textarea style={this.marge({height: this.state.height}, calcStyle(this.props.raw))} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
+              <textarea className={calcClass(this.props.raw)} style={{height: this.state.height}} ref="rawInput" value={this.props.raw} onChange={this.props.changeText} onKeyDown={this.props.keyHandler} />
             </div>
             <div className="half" dangerouslySetInnerHTML={{__html: this.props.preview}}>
             </div>
@@ -325,7 +298,7 @@ var Line = React.createClass({
   render() {
     return (
       <div className="full" ref="wrap">
-        <div className="render" style={this.marge({display: display(!this.props.isRaw)}, calcStyle(this.props.raw))} dangerouslySetInnerHTML={{__html:this.props.preview}} onClick={this.clickHandler} />
+        <div className={`render ${calcClass(this.props.raw)}`} style={{display: display(!this.props.isRaw)}} dangerouslySetInnerHTML={{__html:this.props.preview}} onClick={this.clickHandler} />
         <div className="raw" style={{display: display(this.props.isRaw)}}>
           {this.getEditElm()}
         </div>
@@ -509,7 +482,7 @@ var Lines = React.createClass({
       </div>
       
       <div className="side-bar">
-        <div>
+        <div style={{fontSize:"0.8em"}}>
         {sideBar}
         </div>
         <ul>

@@ -130,12 +130,7 @@ if(opts["title"] && opts["user"]){
     }, function(){});
 
     store.dispatch({type: "UPDATE_SIDEBAR", sideData: [
-      "#test side",
-      "bar",
-      ">> code\ntest",
-      "test",
-      ">> tex\ntest",
-      "hoge"
+      "#inline-wiki",
     ]});
 
   }, 10);
