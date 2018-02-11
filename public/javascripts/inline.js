@@ -96,14 +96,15 @@ if(opts["title"] && opts["user"]){
  
     // todo: require editor.js
     setTimeout(function(){
+      store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
+      store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
+
       var tmpList = loadList(s.split(/[\r\n]/));
       for(var i = 0; i < tmpList.length; i ++){
         store.dispatch({type: "APPEND", text: tmpList[i]});
         preview(store.getState().cursor - 1, tmpList[i]);
       }
       store.dispatch({type: "FOCUS", no: 0});
-      store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
-      store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     },1);
   
   }, function(){
@@ -125,12 +126,10 @@ if(opts["title"] && opts["user"]){
     }
   });
   setTimeout(function(){
-    xhr('/file/list/' + opts['user'] + '', function(o){
-      store.dispatch({type: "UPDATE_LIST", list: o.list});
-    }, function(){});
-
+    store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     store.dispatch({type: "UPDATE_SIDEBAR", sideData: [
       "#inline-wiki",
+      ">> list\n/diary/"
     ]});
 
   }, 10);

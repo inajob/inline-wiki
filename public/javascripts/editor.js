@@ -25,6 +25,27 @@ mermaid.initialize({startOnLoad: true, theme: 'forest'});
 [x] タグが入ったときの対応
  */
 
+// GET request
+function xhr(url, f, errf){
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", url);
+  xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4){
+      if(xmlhttp.status == 200){
+        try{
+          var obj = JSON.parse(xmlhttp.responseText);
+          if(f){f(obj)}
+        }catch(e){
+          errf();
+        }
+      }else{
+        errf();
+      }
+    }
+  };
+  xmlhttp.send();
+}
+
 function jsonp(name, src, f){
   window[name] = function(data){
     f(data);
@@ -66,6 +87,41 @@ function blockToHTML(blockType, body, no, previewAction){
         });
       }
       return "oembed... " + body;
+    case "list":
+      var list = store.getState().list;
+      var conditions = body.split(/[\r\n]/).slice(1);
+      var convert = function(s){
+        var ret = null;
+        conditions.forEach(function(c){
+          if(c.length == 0){
+            return;
+          }
+          if(decodeURIComponent(s).indexOf(c) == 0){
+            ret = {trimmed: decodeURIComponent(s).slice(c.length), raw: s};
+            return;
+          }
+        });
+        return ret;
+      };
+      var filter = function(e){return e != null;}
+      var itemize = function(e){
+        return '<li><a href="?title=' + e.raw + '&user=' + store.getState().user + '">' + e.trimmed + '</a></li>';
+      };
+      var makeBody = function(contents){
+        return '<span class="block-type">&gt;&gt; list</span><div class="file-list">' + contents + '</div><span class="block-type">&lt;&lt;</span>';
+      };
+      if(list.length == 0){
+        xhr('/file/list/' + store.getState().user, function(o){
+          var list = o.list.map(convert).filter(filter).map(itemize).join("\n");
+          store.dispatch({type: previewAction, no: no, preview: makeBody(list)});
+        }, function(){});
+      }else{
+        setTimeout(function(){
+          list = list.map(convert).filter(filter).map(itemize).join("\n");
+          store.dispatch({type: previewAction, no: no, preview: makeBody(list)});
+        },10);
+      }
+      return "loading...";
     case "mermaid":
       var elm = document.createElement("div");
       elm.innerHTML = body;
