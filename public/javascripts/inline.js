@@ -129,7 +129,11 @@ if(opts["title"] && opts["user"]){
     store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     store.dispatch({type: "UPDATE_SIDEBAR", sideData: [
       "#inline-wiki",
-      ">> list\n/diary/"
+      "## diary",
+      ">> list\n/diary/",
+      "## projects",
+      ">> list\n/projects/",
+
     ]});
 
   }, 10);
