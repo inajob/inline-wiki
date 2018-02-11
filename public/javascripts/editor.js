@@ -508,6 +508,12 @@ var Lines = React.createClass({
       ("0" + d.getSeconds()).slice(-2);
     document.location.href = "?title=" + encodeURIComponent(title) + "&user=" + this.props.user;
   },
+  newPage(){
+    var title = prompt("input page name");
+    if(title){
+      document.location.href = "?title=" + encodeURIComponent(title) + "&user=" + this.props.user;
+    }
+  },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
     var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file + "&user=" + this.props.user}>{decodeURIComponent(file)}</a></li>);
@@ -519,6 +525,7 @@ var Lines = React.createClass({
         <span>{this.props.status}</span>
         <span className="button" onClick={this.back}>back</span>
         <span className="button" onClick={this.junk}>junk</span>
+        <span className="button" onClick={this.newPage}>new</span>
         {(() => {
           if(this.props.readOnly){
             return <span><a href={"/auth/twitter?redirect_title=" + encodeURIComponent(this.props.title) + "&redirect_user=" + encodeURIComponent(this.props.user)}>login</a></span>
