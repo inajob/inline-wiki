@@ -32,7 +32,7 @@ configRoutes = function(app, passport) {
       passport.authenticate('twitter')(req,res);
     });
     app.get('/auth/twitter/callback', function(req, res){
-        passport.authenticate('twitter', { successRedirect: '/inline.html?title='+req.session.redirect_title + '&user=' + req.session.redirect_user,
+        passport.authenticate('twitter', { successRedirect: '/inline.html?title='+ encodeURIComponent(req.session.redirect_title) + '&user=' + encodeURIComponent(req.session.redirect_user),
                                                 failureRedirect: '/login' })(req, res);
       }
     );
