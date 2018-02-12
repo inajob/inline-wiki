@@ -96,6 +96,10 @@ function blockToHTML(blockType, body, no, previewAction){
           if(c.length == 0){
             return;
           }
+          if(c == "*"){
+            ret = {trimmed: decodeURIComponent(s), raw: s};
+            return;
+          }
           if(decodeURIComponent(s).indexOf(c) == 0){
             ret = {trimmed: decodeURIComponent(s).slice(c.length), raw: s};
             return;
