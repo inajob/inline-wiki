@@ -125,18 +125,12 @@ if(opts["title"] && opts["user"]){
       store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
     }
   });
-  setTimeout(function(){
+
+  xhr('/file/items/' + opts['user'] + '/menu', function(o){
     store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
-    store.dispatch({type: "UPDATE_SIDEBAR", sideData: [
-      "#inline-wiki",
-      "## diary",
-      ">> list\n/diary/",
-      "## projects",
-      ">> list\n/projects/",
-
-    ]});
-
-  }, 10);
+    store.dispatch({type: "UPDATE_SIDEBAR", sideData: loadList(o.body.split(/[\r\n]/))})
+  });
+  
 
   var preText;
   var firstSync = true;

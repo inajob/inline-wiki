@@ -645,7 +645,7 @@ var wiki = function(state, action) {
       };
     case "UPDATE_SIDEBAR":
       var data = [];
-      action.sideData.map((e,i) => {data[i] = {raw: e, preview: inline(e, i, "SIDE_PREVIEW")};}); // todo can't preview block
+      action.sideData.map((e,i) => {data[i] = {raw: e, preview: inline(e, i, "SIDE_PREVIEW")};});
 
       return {
         title: state.title,
