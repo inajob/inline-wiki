@@ -80,6 +80,7 @@ if(search){
 }
 
 var loginUser = "";
+var mTime = 0;
 
 //if(opts["mode"] && opts["mode"] == "edit"){
 //  // todo: require editor.js
@@ -93,6 +94,7 @@ if(opts["title"] && opts["user"]){
 
   xhr('/file/items/' + opts['user'] + '/' + opts["title"], function(o){
     var s = o.body;
+    mTime = o.mtime;
  
     // todo: require editor.js
     setTimeout(function(){
@@ -141,10 +143,16 @@ if(opts["title"] && opts["user"]){
     if(text != preText && firstSync == false){
       console.log("text diff!");
       store.dispatch({type: "UPDATE_STATUS", status: "saving.."});
-      xhrPut('/file/items/' + loginUser + '/' + opts["title"],function(){
-        preText= text;
-        store.dispatch({type: "UPDATE_STATUS", status: "synced!"});
-      }, {title: decodeURIComponent(opts["title"]), body: text});
+      xhrPut('/file/items/' + loginUser + '/' + opts["title"],function(o){
+        if(o['status'] == "ok"){
+          mTime = o['mtime'];
+          preText= text;
+          store.dispatch({type: "UPDATE_STATUS", status: "synced!"});
+        }else{
+          // todo: prepare alert view
+          alert("conflict" + mTime + " vs " + o['mtime']);
+        }
+      }, {title: decodeURIComponent(opts["title"]), body: text, mtime: mTime});
     }
 
     if(firstSync){

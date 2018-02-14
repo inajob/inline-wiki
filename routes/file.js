@@ -59,9 +59,11 @@ router.get( '/list/:user', function ( req, res ) {
 // GET find :id
 router.get( '/items/:user/:title', function ( req, res ) {
   try{
-    fs.readFile(path.join(baseDir, req.params.user, encodeURIComponent(req.params.title) + '.txt'), 'utf8', function(err, text){
+    var fileName = path.join(baseDir, req.params.user, encodeURIComponent(req.params.title) + '.txt');
+    var stat = fs.statSync(fileName);
+    fs.readFile(fileName, 'utf8', function(err, text){
       if(err == null){
-        res.send({'status': 'success', 'body': text});
+        res.send({'status': 'success', 'body': text, 'mtime': stat.mtime.getTime()});
       }else{
         res.status(404).send({'status': 'error'});
       }
@@ -76,9 +78,26 @@ router.get( '/items/:user/:title', function ( req, res ) {
 // PUT update data
 router.put( '/items/:user/:title', authorize, function ( req, res ) {
   authorize(req, res, function(){
-    fs.writeFileSync(path.join(baseDir, req.params.user, encodeURIComponent(req.params.title)+ '.txt'), req.body.body);
+    var fileName = path.join(baseDir, req.params.user, encodeURIComponent(req.params.title)+ '.txt');
+    var stat,mtime;
+    var fileNotFound = false;
+    try{
+    var stat = fs.statSync(fileName);
+    var mtime = stat.mtime.getTime();
+    }catch(e){
+      // file not found?
+      fileNotFound = true;
+    }
+    if(mtime == req.body.mtime || fileNotFound){
+      fs.writeFileSync(fileName, req.body.body);
 
-    res.send({'status': 'ok'});
+      // re-get stat
+      var stat = fs.statSync(fileName);
+      var mtime = stat.mtime.getTime();
+      res.send({'status': 'ok', 'mtime': mtime});
+    }else{
+      res.send({'status': 'conflict', 'mtime': mtime});
+    }
   });
 } );
 
