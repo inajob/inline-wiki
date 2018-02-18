@@ -73,9 +73,15 @@ pre {
 }
 .block-type{
   background-color:#fff;
-  line-height: 1em;
+  line-height: 1.5em;
   margin-top: 1em;
   margin-bottom: 1em;
+}
+span.block-type{
+  background-color: #aaf;
+  border-radius: 0px 8px 8px 0px;
+  padding-right:5px;
+  color: #33f;
 }
 .file-list li{
   list-style-type: none;
