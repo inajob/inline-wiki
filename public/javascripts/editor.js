@@ -109,7 +109,7 @@ function blockToHTML(blockType, body, no, previewAction){
       };
       var filter = function(e){return e != null;}
       var itemize = function(e){
-        return '<li><a href="?title=' + e.raw + '&user=' + store.getState().user + '">' + e.trimmed + '</a></li>';
+        return '<li><a href="/view/' + encodeURIComponent(store.getState().user) + '/' + e.raw + '">' + e.trimmed + '</a></li>';
       };
       var makeBody = function(contents){
         return '<span class="block-type">&gt;&gt; list</span><div class="file-list">' + contents + '</div><span class="block-type">&lt;&lt;</span>';
@@ -318,7 +318,7 @@ var Line = React.createClass({
   clickHandler:function(e){
     var link = findLink(e.target);
     if(link){
-      document.location.href = "?user="+ this.props.user +"&title=" + link;
+      document.location.href = "/view/"+ encodeURIComponent(this.props.user) +"/" + link;
     }else{
       store.dispatch({type:"FOCUS", no: this.props.lineNo});
     }
@@ -510,17 +510,17 @@ var Lines = React.createClass({
       ("0" + d.getHours()).slice(-2) +
       ("0" + d.getMinutes()).slice(-2) +
       ("0" + d.getSeconds()).slice(-2);
-    document.location.href = "?title=" + encodeURIComponent(title) + "&user=" + this.props.user;
+    document.location.href = "/view/" + encodeURIComponent(this.props.user) + '/' + encodeURIComponent(title);
   },
   newPage(){
     var title = prompt("input page name");
     if(title){
-      document.location.href = "?title=" + encodeURIComponent(title) + "&user=" + this.props.user;
+      document.location.href = "/view/" + encodeURIComponent(this.props.user) + "/" + encodeURIComponent(title);
     }
   },
   render() {
     var listNumber = this.props.data.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={!this.props.readOnly && i == this.props.cursor} changeText={this.changeText} keyHandler={this.keyHandler} ref={"line" + i} />);
-    var fileList = this.props.list.map((file, i) => <li key={i}><a href={"?title=" + file + "&user=" + this.props.user}>{decodeURIComponent(file)}</a></li>);
+    var fileList = this.props.list.map((file, i) => <li key={i}><a href={"/view/" + encodeURIComponent(this.props.user) + "/"+ file}>{decodeURIComponent(file)}</a></li>);
     var sideBar = this.props.sideData.map((data,i) => <Line key={i} lineNo={i} user={this.props.user} raw={data.raw} preview={data.preview} isRaw={false} changeText={this.nil} keyHandler={this.nil} ref={"line" + i} />);
 
     var helloReact = <div className="text">

@@ -10,6 +10,7 @@ var session = require('express-session')
 var auth = require('./passport');
 var passport = auth.passport;
 
+var view = require( './routes/view' );
 var data = require( './routes/data' );
 var contents = require( './routes/contents' );
 var file = require( './routes/file' );
@@ -35,7 +36,7 @@ app.use(session({secret: 'test-salt'}));
 app.use(passport.initialize()); 
 app.use(passport.session()); 
 
-//app.use('/', index);
+app.use('/view/', view);
 app.use('/data', data)
 app.use('/contents', contents)
 app.use('/file', file)

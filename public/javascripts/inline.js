@@ -79,6 +79,14 @@ if(search){
   console.log("options",opts);
 }
 
+if(document.location.pathname.indexOf("/view/") == 0){
+  var tmp = document.location.pathname.split("/");
+  opts['user'] = tmp[2];
+  if(tmp[3]){
+    opts['title'] = tmp[3];
+  }
+}
+
 var loginUser = "";
 var mTime = 0;
 

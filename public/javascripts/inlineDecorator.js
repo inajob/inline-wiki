@@ -84,7 +84,6 @@ var inlineDecorator = (function(){
     var cmd,remain;
     body.forEach(function(v){
       if(Array.isArray(v)){
-        console.log("in");
         tmp = htmlEncode(v);
         list = tmp.split(/\s+/, 2);
         //console.log(list,tmp)
@@ -98,13 +97,12 @@ var inlineDecorator = (function(){
         }else{
           cmd = "";
         }
-        console.log(m,cmd,remain);
 
         switch(cmd){
           case "user":
             list = tmp.split(/(\s+)/);
             out.push("<span class='tiny'>{{user </span>");
-            out.push("<a href='?user=" + encodeURIComponent(list[2]) + "'>");
+            out.push("<a href='/view/" + encodeURIComponent(list[2]) + "'>");
             if(list.length == 3){ // {{link target}}
               out.push(list[2]);
             }else if(list.length > 4){ // {link target body}}
