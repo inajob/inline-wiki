@@ -25,7 +25,7 @@ router.all( '/*', function ( req, res, next ) {
     next();
 } );
 
-router.get( '/user_list', function ( req, res ) {
+router.post( '/user_list', function ( req, res ) {
   fs.readdir(baseDir, function(err, files){
     if(err) throw err;
     var fileList = files.filter(function(file){
@@ -35,7 +35,7 @@ router.get( '/user_list', function ( req, res ) {
   });
 } );
 
-router.get( '/list/:user', function ( req, res ) {
+router.post( '/list/:user', function ( req, res ) {
   try{
     fs.readdir(path.join(baseDir, req.params.user), function(err, files){
       if(err){
@@ -57,7 +57,7 @@ router.get( '/list/:user', function ( req, res ) {
 } );
 
 // GET find :id
-router.get( '/items/:user/:title', function ( req, res ) {
+router.post( '/items/:user/:title', function ( req, res ) {
   try{
     var fileName = path.join(baseDir, req.params.user, encodeURIComponent(req.params.title) + '.txt');
     var stat = fs.statSync(fileName);

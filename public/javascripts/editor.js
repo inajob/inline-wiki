@@ -25,10 +25,10 @@ mermaid.initialize({startOnLoad: true, theme: 'forest'});
 [x] タグが入ったときの対応
  */
 
-// GET request
-function xhr(url, f, errf){
+// POST request
+function xhrPost(url, f, errf){
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", url);
+  xmlhttp.open("POST", url);
   xmlhttp.onreadystatechange = function(){
     if(xmlhttp.readyState == 4){
       if(xmlhttp.status == 200){
@@ -115,7 +115,7 @@ function blockToHTML(blockType, body, no, previewAction){
         return '<span class="block-type">&gt;&gt; list</span><div class="file-list">' + contents + '</div><span class="block-type">&lt;&lt;</span>';
       };
       if(list.length == 0){
-        xhr('/file/list/' + store.getState().user, function(o){
+        xhrPost('/file/list/' + store.getState().user, function(o){
           var list = o.list.map(convert).filter(filter).map(itemize).join("\n");
           store.dispatch({type: previewAction, no: no, preview: makeBody(list)});
         }, function(){});

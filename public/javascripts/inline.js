@@ -93,7 +93,7 @@ var mTime = 0;
 if(opts["title"] && opts["user"]){
   // load
 
-  xhr('/file/items/' + opts['user'] + '/' + opts["title"], function(o){
+  xhrPost('/file/items/' + opts['user'] + '/' + opts["title"], function(o){
     var s = o.body;
     mTime = o.mtime;
  
@@ -132,7 +132,7 @@ if(opts["title"] && opts["user"]){
     },500);
   });
 
-  xhr('/file/items/' + opts['user'] + '/menu', function(o){
+  xhrPost('/file/items/' + opts['user'] + '/menu', function(o){
     store.dispatch({type: "SETUSER", user: decodeURIComponent(opts["user"])});
     store.dispatch({type: "UPDATE_SIDEBAR", sideData: loadList(o.body.split(/[\r\n]/))})
   });
@@ -176,7 +176,7 @@ if(opts["title"] && opts["user"]){
     }
   });
 }else if(opts["user"]){
-  xhr('/file/list/' + opts['user'] + '', function(o){
+  xhrPost('/file/list/' + opts['user'] + '', function(o){
     store.dispatch({type: "UPDATE_LIST", list: o.list});
 
     var tmpList = o.list;
@@ -193,7 +193,7 @@ if(opts["title"] && opts["user"]){
     },100);
   }, function(){});
 }else{
-  xhr('/file/user_list', function(o){
+  xhrPost('/file/user_list', function(o){
     var tmpList = o.list;
     var tmp;
     setTimeout(function(){
