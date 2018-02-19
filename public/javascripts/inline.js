@@ -118,22 +118,25 @@ if(opts["title"] && opts["user"]){
     },1);
   
   }, function(){
-    if(loginUser && opts["user"] == loginUser){
-      if(confirm("This page seems to be empty, create new page?")){
-        //
-        store.dispatch({type: "APPEND", text: "not-found"});
-        store.dispatch({type: "FOCUS", no: 0});
-        store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
-        store.dispatch({type: "SETUSER", user: decodeURIComponent(loginUser)});
+    // error 
+    setTimeout(function(){ // todo: login Info wait
+      if(loginUser && opts["user"] == loginUser){
+        if(confirm("This page seems to be empty, create new page?")){
+          //
+          store.dispatch({type: "APPEND", text: "not-found"});
+          store.dispatch({type: "FOCUS", no: 0});
+          store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
+          store.dispatch({type: "SETUSER", user: decodeURIComponent(loginUser)});
+        }else{
+          //
+          opts["title"] = "";
+          store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
+        }
       }else{
-        //
-        opts["title"] = "";
+        // not found
         store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
       }
-    }else{
-      // not found
-      store.dispatch({type: "SETTITLE", title: "NOT FOUND"});
-    }
+    },500);
   });
 
   xhr('/file/items/' + opts['user'] + '/menu', function(o){
@@ -212,5 +215,38 @@ if(opts["title"] && opts["user"]){
   },function(){});
 }
 
+document.addEventListener("keydown", function(e){
+  var capture = false;
+  switch(e.keyCode){
+    case 38: // up
+      if(store.getState().dialogList.length != 0){
+        capture = true;
+        store.dispatch({type: "DIALOG_UP"});
+      }
+    break;
+    case 40: // down
+      if(store.getState().dialogList.length != 0){
+        capture = true;
+        store.dispatch({type: "DIALOG_DOWN"});
+      }
+    break;
+    case 27: // esc
+      if(store.getState().dialogList.length != 0){
+        capture = true;
+        store.dispatch({type: "DIALOG", dialog: false});
+        store.dispatch({type: "DIALOG_LIST", dialogList: []});
+      }
+      break;
+    case 13: // enter
+      if(store.getState().dialogList.length != 0){
+        capture = true;
+        dialogEnter();
+      }
+      break;
+  }
+  if(capture == true){
+    e.preventDefault();
+  }
+});
 
 });

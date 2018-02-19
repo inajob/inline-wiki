@@ -306,6 +306,80 @@ function findLink(elm){
   return null;
 }
 
+var Dialog = React.createClass({
+  getInitialState(){ return {}; },
+  componentDidMount: function(){
+    this.focus();
+  },
+  componentDidUpdate: function(){
+    var target = this.refs["item" + this.props.dialogCursor];
+    if(target){
+      var pos = target.getBoundingClientRect().top;
+      scrollTo(scrollX, pos + scrollY);
+    }
+  },
+  dialogKeyHandler: function(e){
+    if(e.keyCode == 13){ // enter
+      // todo: temporary
+      switch(this.refs.service.value){
+        case "amz":
+          jsonp("amazon", "http://inajob.dip.jp/twlogin/amz.php?callback=amazon&q=" + encodeURIComponent(this.refs.query.value), function(data){
+          var list = [];
+          data.forEach(function(e){
+            list.push({
+              url: e.link?e.link[0]:"",
+              title: e.title?e.title[0]:"",
+              img: e.mimage?e.mimage[0]:""
+            });
+          });
+          store.dispatch({type:"DIALOG_LIST", dialogList: list});
+        });
+        break;
+        case "ali":
+          jsonp("aliexpress", "http://web.inajob.tk/ali-search/api.php?callback=aliexpress&q=" + encodeURIComponent(this.refs.query.value), function(data){
+          var list = [];
+          data.items.forEach(function(e){
+            list.push({
+              url: e.promotionUrl,
+              title: e.productTitle.replace(/<[^>]*>/g,""),
+              img: e.imageUrl + "_220x220.jpg"
+            });
+          });
+          store.dispatch({type:"DIALOG_LIST", dialogList: list});
+        });
+        break;
+      }
+    }else if(e.keyCode == 27){ // esc -> cancel
+      store.dispatch({type:"DIALOG", dialog: false});
+      store.dispatch({type: "DIALOG_LIST", dialogList: []});
+    }
+  },
+  render() {
+    return (
+      <div className="dialog">
+        dialog{this.props.dialogCursor}
+        {(()=>{
+        if(this.props.items.length == 0){
+          return <div>
+            <select ref="service" size="5">
+              <option value="amz" selected>amazon</option>
+              <option value="ali">aliexpress</option>
+            </select>
+            <input type="text" ref="query" onKeyDown={this.dialogKeyHandler} />
+          </div>
+        }
+        })()}
+        <div>
+        {(()=>{
+          return this.props.items.map((data,i) => <li key={i} ref={"item"+i} style={{border: (i == this.props.dialogCursor?"solid":"none")}}>{data.title} <img src={data.img} /></li>)
+        })()}
+        </div>
+      </div>
+    );
+  },
+  focus: function(){ this.refs.query.focus(); }
+});
+
 var Line = React.createClass({
   getInitialState(){ return {height: "1em"}; },
   componentWillReceiveProps(nextProps){ this.setState({height: numLines(nextProps.raw) + "em"}) },
@@ -480,11 +554,16 @@ var Lines = React.createClass({
         // enterをキャンセルする
         if(isInline(text)){
           ret = false
+          if(e.shiftKey){ // Shift + Enter
+            var query = text.substr(e.target.selectionStart, e.target.selectionEnd);
+            this.actionCreate({type: "DIALOG",dialog: true});
+          }else{
             if(isList(text)){
               this.actionCreate({type: "SPLIT", first: text.substr(0,e.target.selectionStart), second: getListNestString(text) + text.substr(e.target.selectionStart)});
             }else{
               this.actionCreate({type: "SPLIT", first: text.substr(0,e.target.selectionStart), second: text.substr(e.target.selectionStart)});
             }
+          }
         }else{ // not inline
           if(e.shiftKey){ // shift + enter
             ret = false;
@@ -542,6 +621,12 @@ var Lines = React.createClass({
       <div className="wiki-body">
         <h1 className="wiki-title">{this.props.title}</h1>
         {listNumber}
+
+        {(() => {
+        if(this.props.dialog){
+          return <Dialog dialogCursor={this.props.dialogCursor} items={this.props.dialogList} />
+        }
+        })()}
       </div>
       <div className="debug-console">
         <div>title: {this.props.title}</div>
@@ -556,6 +641,7 @@ var Lines = React.createClass({
           {fileList}
         </ul>
       </div>
+
     </div>;
 
     return helloReact;
@@ -569,6 +655,9 @@ var initialWiki = {
   cursor: 0,
   status: "test",
   list: [],
+  dialog: false,
+  dialogCursor: 0,
+  dialogList: [],
   sideData: [],
   data:[
   ]
@@ -592,6 +681,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: data
       };
@@ -606,6 +698,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: data,
         data: state.data
       };
@@ -617,6 +712,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -628,6 +726,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -640,6 +741,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: action.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -654,6 +758,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: data,
         data: state.data
       };
@@ -665,6 +772,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: action.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -676,6 +786,9 @@ var wiki = function(state, action) {
         cursor: action.no,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -688,6 +801,9 @@ var wiki = function(state, action) {
           cursor: state.cursor - 1,
           status: state.status,
           list: state.list,
+          dialog: state.dialog,
+          dialogCursor: state.dialogCursor,
+          dialogList: state.dialogList,
           sideData: state.sideData,
           data: state.data
         }
@@ -704,6 +820,9 @@ var wiki = function(state, action) {
           cursor: state.cursor + 1,
           status: state.status,
           list: state.list,
+          dialog: state.dialog,
+          dialogCursor: state.dialogCursor,
+          dialogList: state.dialogList,
           sideData: state.sideData,
           data: state.data
         }
@@ -725,6 +844,9 @@ var wiki = function(state, action) {
           cursor: state.cursor,
           status: state.status,
           list: state.list,
+          dialog: state.dialog,
+          dialogCursor: state.dialogCursor,
+          dialogList: state.dialogList,
           sideData: state.sideData,
           data: data
       }
@@ -742,6 +864,9 @@ var wiki = function(state, action) {
         cursor: state.cursor + 1,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: data
       }
@@ -757,6 +882,9 @@ var wiki = function(state, action) {
         cursor: state.cursor + 1,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: data
       }
@@ -772,6 +900,9 @@ var wiki = function(state, action) {
         cursor: state.cursor - 1,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: data
       }
@@ -793,6 +924,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data:data
       }
@@ -814,9 +948,68 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data:data
       }
+    case "DIALOG":
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: action.dialog, // read only
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        dialog: action.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
+        sideData: state.sideData,
+        data: state.data
+      };
+    case "DIALOG_LIST":
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: action.dialogList,
+        sideData: state.sideData,
+        data: state.data
+      };
+    case "DIALOG_UP":
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor - 1,
+        dialogList: state.dialogList,
+        sideData: state.sideData,
+        data: state.data
+      };
+    case "DIALOG_DOWN":
+      return {
+        title: state.title,
+        user: state.user,
+        readOnly: state.readOnly,
+        cursor: state.cursor,
+        status: state.status,
+        list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor + 1,
+        dialogList: state.dialogList,
+        sideData: state.sideData,
+        data: state.data
+      };
     case "READONLY":
       return {
         title: state.title,
@@ -825,6 +1018,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -836,6 +1032,9 @@ var wiki = function(state, action) {
         cursor: state.cursor,
         status: state.status,
         list: state.list,
+        dialog: state.dialog,
+        dialogCursor: state.dialogCursor,
+        dialogList: state.dialogList,
         sideData: state.sideData,
         data: state.data
       };
@@ -853,6 +1052,9 @@ var mapStateToProps = function(state){
     cursor: state.cursor,
     status: state.status,
     list: state.list,
+    dialog: state.dialog,
+    dialogCursor: state.dialogCursor,
+    dialogList: state.dialogList,
     sideData: state.sideData,
     data: state.data,
   }
@@ -881,6 +1083,18 @@ var loadTest = [
   "<<",
   "end line",
 ];
+
+function dialogEnter(){
+  var item = store.getState().dialogList[store.getState().dialogCursor];
+  store.dispatch({type: "DIALOG", dialog: false});
+  var text = [">> table",
+    item.title,
+    "{{link " + item.url + " {{img " + item.img + "}}}}",
+    ].join("\n");
+  store.dispatch({type: "CHANGETEXT", text: text});
+  store.dispatch({type: "DIALOG_LIST", dialogList: []});
+  preview(store.getState().cursor, text);
+}
 
 function loadList(list){
   var M_NORMAL = 0;

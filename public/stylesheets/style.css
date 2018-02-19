@@ -35,11 +35,20 @@ body{
 
 }
 .wiki-body{
+  position: relative;
   margin-top:2em;
   margin-left:10em;
   margin-right:0em;
   border:solid 6px #aaf;
   border-radius: 25px;
+}
+.dialog{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #ffd;
+  border:solid;
+  width: 100%;
 }
 ul{
   margin-left:1em;
