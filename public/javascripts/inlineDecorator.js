@@ -57,7 +57,7 @@ var inlineDecorator = (function(){
           if(pos != cap.pos){
             out.push(newPiece("text", body.slice(pos, cap.pos)));
           }
-          var endPos = capture(body, [" ","\r", "\n"], pos + cap.target.length + 1);
+          var endPos = capture(body, [" ","\r", "\n"], cap.pos + cap.target.length);
           if(endPos.pos != -1){
             out.push(newPiece("url", body.slice(cap.pos, endPos.pos)));
             pos = endPos.pos;

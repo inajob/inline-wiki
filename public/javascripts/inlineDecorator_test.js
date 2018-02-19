@@ -55,7 +55,7 @@ describe('parse', function(){
     {kind: "text",body: "ab"},
     {kind: "text",body: "hoge"},
   ])});
-  it('url test', function(){assert.deepEqual(id.parse("aaaaaaa http://yahoo.co.jp", 0),[{kind: "text",body: "aaaaaaa "},{kind: "url", body: "http://yahoo.co.jp"}])});
+  it('url test', function(){assert.deepEqual(id.parse("   aaaaaaa http://yahoo.co.jp", 0),[{kind: "text",body: "   aaaaaaa "},{kind: "url", body: "http://yahoo.co.jp"}])});
  
 });
 
