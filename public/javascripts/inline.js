@@ -90,13 +90,6 @@ if(document.location.pathname.indexOf("/view/") == 0){
 var loginUser = "";
 var mTime = 0;
 
-//if(opts["mode"] && opts["mode"] == "edit"){
-//  // todo: require editor.js
-//  setTimeout(function(){
-//    store.dispatch({type: "EDITABLE"});
-//  }, 1000);
-//}
-
 if(opts["title"] && opts["user"]){
   // load
 
