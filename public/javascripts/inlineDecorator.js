@@ -149,7 +149,7 @@ var inlineDecorator = (function(){
             break;
           case "url":
             // todo: escape
-            out.push("<a href='" +  v.body + "'>" + v.body + "</a>");
+            out.push("<a href='" +  v.body + "'>" + v.body + "</a><a href='http://b.hatena.ne.jp/entry/"+ v.body+"' target='_blank'><img src='http://b.hatena.ne.jp/entry/image/" + v.body + "' /></a>");
             break;
         }
       }

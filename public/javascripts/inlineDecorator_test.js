@@ -72,7 +72,7 @@ describe('htmlEncode', function(){
     {kind: "url",body: "http://test.aaa"},
     {kind: "text",body: "yz"},
   ]
-  ),"ab<a href='http://test.aaa'>http://test.aaa</a>yz")});
+  ),"ab<a href='http://test.aaa'>http://test.aaa</a><a href='http://b.hatena.ne.jp/entry/http://test.aaa' target='_blank'><img src='http://b.hatena.ne.jp/entry/image/http://test.aaa' /></a>yz")});
   it('link', function(){assert.deepEqual(id.htmlEncode([
     {kind: "text",body: "ab"},
     [{kind: "text",body: "link address"}],
