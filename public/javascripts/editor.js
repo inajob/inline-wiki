@@ -323,7 +323,7 @@ var Dialog = React.createClass({
       // todo: temporary
       switch(this.refs.service.value){
         case "amz":
-          jsonp("amazon", "http://inajob.dip.jp/twlogin/amz.php?callback=amazon&q=" + encodeURIComponent(this.refs.query.value), function(data){
+          jsonp("amazon", "http://web.inajob.tk/ad/amz.php?callback=amazon&q=" + encodeURIComponent(this.refs.query.value), function(data){
           var list = [];
           data.forEach(function(e){
             list.push({
