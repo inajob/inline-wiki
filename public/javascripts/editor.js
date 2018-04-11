@@ -320,7 +320,6 @@ var Dialog = React.createClass({
   },
   dialogKeyHandler: function(e){
     if(e.keyCode == 13){ // enter
-      // todo: temporary
       switch(this.refs.service.value){
         case "amz":
           jsonp("amazon", "http://web.inajob.tk/ad/amz.php?callback=amazon&q=" + encodeURIComponent(this.refs.query.value), function(data){
