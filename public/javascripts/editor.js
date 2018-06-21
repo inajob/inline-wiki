@@ -87,6 +87,43 @@ function blockToHTML(blockType, body, no, previewAction){
         });
       }
       return "oembed... " + body;
+    case "hatebu":
+      // http://b.hatena.ne.jp/entry/json/?url=http%3A%2F%2Fwww.hatena.ne.jp%2F&callback=funcname
+
+      var name = "callback_" + Math.random().toString(36).slice(-8);
+      console.log(body);
+      var url;
+      url = "http://b.hatena.ne.jp/entry/json/?url="+encodeURIComponent(body.replace(/[\r\n]/g,""))+'&callback=' + name;
+
+      jsonp(name, url, function(data){
+        console.log(data);
+        var bookmarks = [];
+        if(data == null){
+          var html = '<span class="block-type">&gt;&gt; hatebu</span><br/>' +
+                '<a target="_blank" href="' + (body) + '">' + body + "</a>" +
+                '<a href="http://b.hatena.ne.jp/inajob/add.confirm?url='+ encodeURIComponent(body)+'" target="_blank">'+
+                '<img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" />'+
+                '</a>'+
+                '<br/><span class="block-type">&lt;&lt; by b.hatena.ne.jp</span>'
+          store.dispatch({type: previewAction, no: no, preview: html});
+        }else{
+          data.bookmarks.forEach(function(o){
+            if(o.comment!=""){
+              bookmarks.push('<img width="16" height="16" src="https://cdn.profile-image.st-hatena.com/users/'+encodeURIComponent(o.user)+'/profile.png" />' + o.user + ": " + o.comment);
+            }
+          })
+          var html = '<span class="block-type">&gt;&gt; hatebu</span><br/>' +
+                '<a target="_blank" href="' + (body) + '">' + data.title + "</a>" +
+                "<a href='http://b.hatena.ne.jp/entry/"+ body+"' target='_blank'><img src='http://b.hatena.ne.jp/entry/image/" + body + "' /></a>" +
+                '<div class="hatebu">' +
+                bookmarks.join("<br/>") +
+                '</div>' +
+                '<br/><span class="block-type">&lt;&lt; by b.hatena.ne.jp</span>';
+          store.dispatch({type: previewAction, no: no, preview: html});
+        }
+      });
+
+      return "hatebu... " + body;
     case "list":
       var list = store.getState().list;
       var conditions = body.split(/[\r\n]/).slice(1);
