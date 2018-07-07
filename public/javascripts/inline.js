@@ -91,12 +91,12 @@ var loginUser = "";
 var mTime = 0;
 
 if(opts["title"] && opts["user"]){
-  // load
+  document.title = decodeURIComponent(opts["title"]);
 
+  // load
   xhrPost('/file/items/' + opts['user'] + '/' + opts["title"], function(o){
     var s = o.body;
     mTime = o.mtime;
- 
     // todo: require editor.js
     setTimeout(function(){
       store.dispatch({type: "SETTITLE", title: decodeURIComponent(opts["title"])});
