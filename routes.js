@@ -29,7 +29,7 @@ configRoutes = function(app, passport) {
     app.get('/auth/twitter', function(req, res){
       req.session.redirect_title = req.query.redirect_title;
       req.session.redirect_user = req.query.redirect_user;
-      passport.authenticate('twitter')(req,res);
+      passport.authenticate('twitter')(req,res,function(err, status){console.log("auth error", err, status)});
     });
     app.get('/auth/twitter/callback', function(req, res){
         passport.authenticate('twitter', { successRedirect: '/view/' + encodeURIComponent(req.session.redirect_user) + '/' + encodeURIComponent(req.session.redirect_title),
