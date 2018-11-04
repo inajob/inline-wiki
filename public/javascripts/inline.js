@@ -154,17 +154,16 @@ if(opts["title"] && opts["user"]){
           store.dispatch({type: "UPDATE_STATUS", status: "synced!"});
         }else{
           // todo: prepare alert view
-          alert("conflict" + mTime + " vs " + o['mtime']);
+          //alert("conflict" + mTime + " vs " + o['mtime']);
+          store.dispatch({type: "UPDATE_STATUS", status: "conflict!"});
         }
       }, {title: decodeURIComponent(opts["title"]), body: text, mtime: mTime});
     }
-
     if(firstSync){
       firstSync = false;
       preText = text;
     }
-  
-  },1000);
+  },5000);
 
   xhrPost('/loginCheck', function(o){
     console.log("loginCheck", o);
